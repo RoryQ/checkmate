@@ -138,7 +138,7 @@ func TestRegexps(t *testing.T) {
 				re:      indicatorRE,
 			},
 			expected: []reMatch{
-				{227, 245, "<!-- Checkmate -->"},
+				{8, "<!-- Checkmate -->"},
 			},
 		},
 		{
@@ -156,8 +156,8 @@ func TestRegexps(t *testing.T) {
 				re:      headerRE,
 			},
 			expected: []reMatch{
-				{1, 36, "## Hey, I just made a Pull Request!"},
-				{192, 225, "#### :heavy_check_mark: Checklist"},
+				{1, "## Hey, I just made a Pull Request!"},
+				{6, "#### :heavy_check_mark: Checklist"},
 			},
 		},
 		{
@@ -182,6 +182,72 @@ func TestRegexps(t *testing.T) {
 			assert := is.NewRelaxed(t)
 			actual := findRE(tt.args.content, tt.args.re)
 			assert.Equal(tt.expected, actual)
+		})
+	}
+}
+
+func Test_findChecklistBlock(t *testing.T) {
+	type args struct {
+		content string
+	}
+	checklistBlock := `- [ ] A changeset describing the change and affected packages. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets))
+- [ ] Added or updated documentation
+- [x] Tests for new functionality and regression tests for bug fixes
+- [ ] Screenshots attached (for UI changes)
+` + "- [ ] All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))"
+	tests := []struct {
+		name     string
+		args     args
+		expected []block
+	}{
+		{
+			name:     "Empty",
+			args:     args{},
+			expected: []block{},
+		},
+		{
+			name: "OneBlock",
+			args: args{
+				content: backstageWithIndicator,
+			},
+			expected: []block{
+				{
+					Raw:         checklistBlock,
+					LineNumbers: []int{11, 12, 13, 14, 15},
+				},
+			},
+		},
+		{
+			name: "MultiBlock",
+			args: args{
+				content: backstageWithIndicator + backstageNoIndicator,
+			},
+			expected: []block{
+				{
+					Raw:         checklistBlock,
+					LineNumbers: []int{11, 12, 13, 14, 15},
+				},
+				{
+					Raw:         checklistBlock,
+					LineNumbers: []int{26, 27, 28, 29},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert := is.NewRelaxed(t)
+			actual := findChecklistBlock(tt.args.content)
+
+			for i, expectedB := range tt.expected {
+				var actualB block
+				if len(actual) > i {
+					actualB = actual[i]
+				}
+
+				assert.Equal(actualB.Raw, expectedB.Raw)
+				assert.Equal(actualB.LineNumbers, expectedB.LineNumbers)
+			}
 		})
 	}
 }
