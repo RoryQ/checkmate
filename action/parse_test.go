@@ -229,7 +229,7 @@ func Test_findChecklistBlock(t *testing.T) {
 				},
 				{
 					Raw:         checklistBlock,
-					LineNumbers: []int{26, 27, 28, 29},
+					LineNumbers: []int{25, 26, 27, 28, 29},
 				},
 			},
 		},

@@ -50,7 +50,7 @@ type block struct {
 }
 
 func findChecklistBlock(content string) []block {
-	re := regexp.MustCompile(`(?m)- \[[ x]\] .*`)
+	re := regexp.MustCompile(`- \[[ x]\] .*`)
 
 	matches := findRE(content, re)
 
@@ -75,7 +75,10 @@ func findChecklistBlock(content string) []block {
 
 		// block ended
 		blocks = append(blocks, b)
-		b = block{}
+		b = block{
+			Raw:         m.Raw,
+			LineNumbers: []int{m.LineNumber},
+		}
 	}
 	if b.Raw != "" {
 		blocks = append(blocks, b)
