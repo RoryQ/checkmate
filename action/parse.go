@@ -2,6 +2,7 @@ package action
 
 import (
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -22,14 +23,59 @@ type reMatch struct {
 	Raw        string
 }
 
-func Parse(content string) Checklist {
-	_ = findRE(content, indicatorRE)
-
-	return Checklist{Raw: content}
-}
-
 var indicatorRE = regexp.MustCompile(`(?i)<!--\s*Checkmate\s*-->`)
 var headerRE = regexp.MustCompile(`(?im)^ {0,3}#{1,6}\s.*`)
+
+func Parse(content string) (list []Checklist) {
+	indicators := findRE(content, indicatorRE)
+
+	if len(indicators) == 0 {
+		return
+	}
+
+	headers := findRE(content, headerRE)
+	sort.SliceStable(headers, func(i, j int) bool { return j > i })
+	checklists := findChecklistBlock(content)
+	for _, ind := range indicators {
+		indLineNumber := ind.LineNumber
+
+		c := sort.Search(len(checklists), func(i int) bool {
+			return checklists[i].LineNumbers[0] > indLineNumber
+		})
+
+		h := sort.Search(len(headers), func(i int) bool {
+			return headers[i].LineNumber > indLineNumber
+		})
+
+		list = append(list, Checklist{
+			Items:  blockToItems(checklists[c]),
+			Header: headers[h-1].Raw,
+			Raw:    checklists[c].Raw,
+		})
+	}
+
+	return
+}
+
+func blockToItems(b block) (items []ChecklistItem) {
+	re := regexp.MustCompile(`- (?P<Checked>\[[ x]]) (?P<Message>.*)`)
+	parseChecked := func(s string) bool {
+		return s == "[x]"
+	}
+
+	for _, line := range strings.Split(b.Raw, "\n") {
+		matches := re.FindAllStringSubmatch(line, -1)[0]
+		items = append(items,
+			ChecklistItem{
+				Message: matches[re.SubexpIndex("Message")],
+				Checked: parseChecked(matches[re.SubexpIndex("Checked")]),
+				Raw:     line,
+			},
+		)
+	}
+
+	return
+}
 
 func findRE(content string, re *regexp.Regexp) []reMatch {
 	var matches []reMatch
@@ -49,12 +95,10 @@ type block struct {
 	LineNumbers []int
 }
 
-func findChecklistBlock(content string) []block {
+func findChecklistBlock(content string) (blocks []block) {
 	re := regexp.MustCompile(`- \[[ x]\] .*`)
 
 	matches := findRE(content, re)
-
-	blocks := []block{}
 
 	b := block{}
 	for _, m := range matches {

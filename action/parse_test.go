@@ -26,6 +26,12 @@ var (
 ` + "- [ ] All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))"
 
 	backstageWithIndicator = insertLine(backstageNoIndicator, "<!-- Checkmate -->", 8)
+
+	checklistOnly = `- [ ] A changeset describing the change and affected packages. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets))
+- [ ] Added or updated documentation
+- [x] Tests for new functionality and regression tests for bug fixes
+- [ ] Screenshots attached (for UI changes)
+` + "- [ ] All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))"
 )
 
 func TestParse(t *testing.T) {
@@ -43,17 +49,17 @@ func TestParse(t *testing.T) {
 			expected: Checklist{},
 		},
 		{
-			name: "No Attribute",
+			name: "No Indicator",
 			args: args{content: backstageNoIndicator},
 			expected: Checklist{
 				Raw: backstageNoIndicator,
 			},
 		},
 		{
-			name: "With Attribute",
+			name: "With Indicator",
 			args: args{content: backstageWithIndicator},
 			expected: Checklist{
-				Raw:    backstageWithIndicator,
+				Raw:    checklistOnly,
 				Header: "#### :heavy_check_mark: Checklist",
 				Items: []ChecklistItem{
 					{
@@ -77,9 +83,9 @@ func TestParse(t *testing.T) {
 						Raw:     `- [ ] Screenshots attached (for UI changes)`,
 					},
 					{
-						Message: "All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))}",
+						Message: "All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))",
 						Checked: false,
-						Raw:     "- [ ] All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))}",
+						Raw:     "- [ ] All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))",
 					},
 				},
 			},
@@ -88,19 +94,21 @@ func TestParse(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert := is.NewRelaxed(t)
-			actual := Parse(tt.args.content)
-			assert.Equal(actual.Raw, tt.expected.Raw)
-			assert.Equal(actual.Header, tt.expected.Header)
+			actualList := Parse(tt.args.content)
+			for _, actual := range actualList {
+				assert.Equal(actual.Raw, tt.expected.Raw)
+				assert.Equal(actual.Header, tt.expected.Header)
 
-			for i := range tt.expected.Items {
-				var actualItem ChecklistItem
-				if len(actual.Items) > i {
-					actualItem = actual.Items[i]
+				for i := range tt.expected.Items {
+					var actualItem ChecklistItem
+					if len(actual.Items) > i {
+						actualItem = actual.Items[i]
+					}
+					expectedItem := tt.expected.Items[i]
+					assert.Equal(actualItem.Message, expectedItem.Message)
+					assert.Equal(actualItem.Checked, expectedItem.Checked)
+					assert.Equal(actualItem.Raw, expectedItem.Raw)
 				}
-				expectedItem := tt.expected.Items[i]
-				assert.Equal(actualItem.Message, expectedItem.Message)
-				assert.Equal(actualItem.Checked, expectedItem.Checked)
-				assert.Equal(actualItem.Raw, expectedItem.Raw)
 			}
 		})
 	}
