@@ -1,4 +1,4 @@
-package action
+package checkmate
 
 type ChecklistItem struct {
 	Message string
@@ -22,3 +22,7 @@ func (c Checklist) AllChecked() bool {
 }
 
 // https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/
+
+func (c Checklist) Summary() string {
+	return c.Raw
+}
