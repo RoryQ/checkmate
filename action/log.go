@@ -2,13 +2,12 @@ package action
 
 import (
 	"fmt"
-	"os"
 )
 
 func Info(msg ...any) {
-	fmt.Println(msg...)
+	fmt.Printf("\033[0;34m%s\033[0m", fmt.Sprintln(msg...))
 }
 
 func Debug(msg ...any) {
-	fmt.Fprintln(os.Stderr, msg...)
+	fmt.Printf("\033[0;36m%s\033[0m", fmt.Sprintln(msg...))
 }

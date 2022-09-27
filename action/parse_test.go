@@ -1,15 +1,16 @@
 package action
 
 import (
-	"github.com/matryer/is"
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/matryer/is"
 )
 
 var (
 	// sample template taken from backstage/backstage
-	backstageNoIndicator = `
+	ChecklistNoIndicator = `
 ## Hey, I just made a Pull Request!
 
 <!-- Please describe what you added, and add a screenshot if possible.
@@ -25,7 +26,7 @@ var (
 - [ ] Screenshots attached (for UI changes)
 ` + "- [ ] All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))"
 
-	backstageWithIndicator = insertLine(backstageNoIndicator, "<!-- Checkmate -->", 8)
+	ChecklistWithIndicator = insertLine(ChecklistNoIndicator, "<!-- Checkmate -->", 8)
 
 	checklistOnly = `- [ ] A changeset describing the change and affected packages. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets))
 - [ ] Added or updated documentation
@@ -50,14 +51,14 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "No Indicator",
-			args: args{content: backstageNoIndicator},
+			args: args{content: ChecklistNoIndicator},
 			expected: Checklist{
-				Raw: backstageNoIndicator,
+				Raw: ChecklistNoIndicator,
 			},
 		},
 		{
 			name: "With Indicator",
-			args: args{content: backstageWithIndicator},
+			args: args{content: ChecklistWithIndicator},
 			expected: Checklist{
 				Raw:    checklistOnly,
 				Header: "#### :heavy_check_mark: Checklist",
@@ -134,7 +135,7 @@ func TestRegexps(t *testing.T) {
 		{
 			name: "NoIndicator",
 			args: args{
-				content: backstageNoIndicator,
+				content: ChecklistNoIndicator,
 				re:      indicatorRE,
 			},
 			expected: nil,
@@ -142,7 +143,7 @@ func TestRegexps(t *testing.T) {
 		{
 			name: "WithIndicator",
 			args: args{
-				content: backstageWithIndicator,
+				content: ChecklistWithIndicator,
 				re:      indicatorRE,
 			},
 			expected: []reMatch{
@@ -160,7 +161,7 @@ func TestRegexps(t *testing.T) {
 		{
 			name: "WithHeader",
 			args: args{
-				content: backstageWithIndicator,
+				content: ChecklistWithIndicator,
 				re:      headerRE,
 			},
 			expected: []reMatch{
@@ -216,7 +217,7 @@ func Test_findChecklistBlock(t *testing.T) {
 		{
 			name: "OneBlock",
 			args: args{
-				content: backstageWithIndicator,
+				content: ChecklistWithIndicator,
 			},
 			expected: []block{
 				{
@@ -228,7 +229,7 @@ func Test_findChecklistBlock(t *testing.T) {
 		{
 			name: "MultiBlock",
 			args: args{
-				content: backstageWithIndicator + backstageNoIndicator,
+				content: ChecklistWithIndicator + ChecklistNoIndicator,
 			},
 			expected: []block{
 				{

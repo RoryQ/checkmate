@@ -6,24 +6,13 @@ import (
 	"strings"
 )
 
-type ChecklistItem struct {
-	Message string
-	Checked bool
-	Raw     string
-}
-
-type Checklist struct {
-	Items  []ChecklistItem
-	Header string
-	Raw    string
-}
-
 type reMatch struct {
 	LineNumber int
 	Raw        string
 }
 
 var indicatorRE = regexp.MustCompile(`(?i)<!--\s*Checkmate\s*-->`)
+
 var headerRE = regexp.MustCompile(`(?im)^ {0,3}#{1,6}\s.*`)
 
 func Parse(content string) (list []Checklist) {
