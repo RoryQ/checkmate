@@ -5,6 +5,7 @@
 ## Features
 
 - [x] Fails validation until all configured checklists are checked.
+- [ ] Support for validating one-of lists i.e. radio button
 - [ ] Automatically creates checklists based on file changes.
 
 ## Configuration

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/sethvargo/go-githubactions"
 
@@ -13,14 +12,7 @@ func run() error {
 	ctx := context.Background()
 	action := githubactions.New()
 
-	cfg, err := checkmate.ConfigFromInputs(action)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(cfg.Checklists)
-
-	return checkmate.Run(ctx, cfg, action)
+	return checkmate.Run(ctx, &checkmate.Config{}, action)
 }
 
 func main() {
