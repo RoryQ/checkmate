@@ -4,6 +4,8 @@ on:
   pull_request:
     types:
       - edited
+      - opened
+      - reopened
 
 jobs:
   pr-comment:

@@ -34,7 +34,7 @@ Then configure the action in your workflow like
 on:
   # Run against PR description changes
   pull_request:
-    types: [edited]
+    types: [edited, opened, reopened]
 
 name: Checklist Check
 jobs:

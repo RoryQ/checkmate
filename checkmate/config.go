@@ -8,7 +8,6 @@ import (
 )
 
 type Config struct {
-	Checklists map[string]string
 }
 
 func ConfigFromInputs(action *githubactions.Action) (*Config, error) {
@@ -21,8 +20,6 @@ func ConfigFromInputs(action *githubactions.Action) (*Config, error) {
 		return nil, err
 	}
 
-	c := Config{
-		Checklists: checklists,
-	}
+	c := Config{}
 	return &c, nil
 }

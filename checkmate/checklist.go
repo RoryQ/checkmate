@@ -1,5 +1,9 @@
 package checkmate
 
+import (
+	"fmt"
+)
+
 type ChecklistItem struct {
 	Message string
 	Checked bool
@@ -24,5 +28,5 @@ func (c Checklist) AllChecked() bool {
 // https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/
 
 func (c Checklist) Summary() string {
-	return c.Raw
+	return fmt.Sprintf("%s\n%s", c.Header, c.Raw)
 }
