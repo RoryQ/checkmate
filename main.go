@@ -12,7 +12,12 @@ func run() error {
 	ctx := context.Background()
 	action := githubactions.New()
 
-	return checkmate.Run(ctx, &checkmate.Config{}, action)
+	cfg, err := checkmate.ConfigFromInputs(action)
+	if err != nil {
+		return err
+	}
+
+	return checkmate.Run(ctx, cfg, action)
 }
 
 func main() {

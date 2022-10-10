@@ -20,7 +20,7 @@ func Run(ctx context.Context, cfg *Config, action *githubactions.Action) error {
 
 	action.Debugf("Checklists: %v", checklists)
 
-	action.AddStepSummary("_The following checklists were found and validated_\n")
+	action.AddStepSummary("_The following checklists were found and validated:_\n")
 
 	allChecked := true
 	for _, checklist := range checklists {
