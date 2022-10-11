@@ -1,0 +1,13 @@
+name: Checklist Checker 🕵️
+description: Automated checklist inspector for your pull requests
+author: "Rory Quinn"
+
+inputs:
+  github_token:
+    description: "GITHUB_TOKEN"
+runs:
+  using: node16
+  main: index.js
+branding:
+  icon: "check-square"
+  color: "green"
