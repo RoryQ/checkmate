@@ -246,7 +246,7 @@ func Test_findChecklistBlock(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert := is.NewRelaxed(t)
-			actual := findChecklistBlock(tt.args.content)
+			actual := findChecklistBlocks(tt.args.content)
 
 			for i, expectedB := range tt.expected {
 				var actualB block

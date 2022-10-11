@@ -17,14 +17,15 @@ var headerRE = regexp.MustCompile(`(?im)^ {0,3}#{1,6}\s.*`)
 
 func Parse(content string) (list []Checklist) {
 	indicators := findRE(content, indicatorRE)
-
 	if len(indicators) == 0 {
 		return
 	}
 
+	checklists := findChecklistBlocks(content)
+
 	headers := findRE(content, headerRE)
 	sort.SliceStable(headers, func(i, j int) bool { return j > i })
-	checklists := findChecklistBlock(content)
+
 	for _, ind := range indicators {
 		indLineNumber := ind.LineNumber
 
@@ -84,7 +85,7 @@ type block struct {
 	LineNumbers []int
 }
 
-func findChecklistBlock(content string) (blocks []block) {
+func findChecklistBlocks(content string) (blocks []block) {
 	re := regexp.MustCompile(`- \[[ x]\] .*`)
 
 	matches := findRE(content, re)
