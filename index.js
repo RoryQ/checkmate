@@ -34,12 +34,15 @@ function chooseBinary(versionTag) {
 
 function downloadBinary(versionTag, binary) {
     const url = `https://github.com/RoryQ/checkmate/releases/download/${versionTag}/${binary}.tar.gz`
+    console.log(url)
     let command = `curl -sL '${url}' | tar xvz`;
-    let result = childProcess.spawnSync(command, {shell: true});
+    let result = childProcess.spawnSync(command, {shell: true, stdio: 'inherit'});
+    console.log(result)
     return result.status
 }
 
 function main() {
+    console.log("started")
     const versionTag = "v0.0.1"
     let status = downloadBinary(versionTag, chooseBinary("v0.0.1"))
     if (typeof status === 'number' && status > 0) {
