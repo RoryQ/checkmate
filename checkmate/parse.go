@@ -24,7 +24,6 @@ func Parse(content string) (list []Checklist) {
 	checklists := findChecklistBlocks(content)
 
 	headers := findRE(content, headerRE)
-	sort.SliceStable(headers, func(i, j int) bool { return j > i })
 
 	for _, ind := range indicators {
 		indLineNumber := ind.LineNumber
@@ -33,18 +32,27 @@ func Parse(content string) (list []Checklist) {
 			return checklists[i].LineNumbers[0] > indLineNumber
 		})
 
-		h := sort.Search(len(headers), func(i int) bool {
-			return headers[i].LineNumber > indLineNumber
-		})
-
 		list = append(list, Checklist{
 			Items:  blockToItems(checklists[c]),
-			Header: headers[h-1].Raw,
+			Header: closestHeaderTo(headers, indLineNumber),
 			Raw:    checklists[c].Raw,
 		})
 	}
 
 	return
+}
+
+func closestHeaderTo(headers []reMatch, indLineNumber int) string {
+	if len(headers) == 0 {
+		return ""
+	}
+
+	h := sort.Search(len(headers), func(i int) bool {
+		return headers[i].LineNumber > indLineNumber
+	})
+
+	foundHeader := headers[h-1].Raw
+	return foundHeader
 }
 
 func blockToItems(b block) (items []ChecklistItem) {
@@ -77,6 +85,7 @@ func findRE(content string, re *regexp.Regexp) []reMatch {
 		}
 	}
 
+	sort.SliceStable(matches, func(i, j int) bool { return j > i })
 	return matches
 }
 
