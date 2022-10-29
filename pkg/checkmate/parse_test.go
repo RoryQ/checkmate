@@ -26,7 +26,8 @@ var (
 - [ ] Screenshots attached (for UI changes)
 ` + "- [ ] All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))"
 
-	ChecklistWithIndicator = insertLine(ChecklistNoIndicator, "<!-- Checkmate -->", 8)
+	Indicator              = "<!- Checkmate -->"
+	ChecklistWithIndicator = insertLine(ChecklistNoIndicator, Indicator, 8)
 
 	checklistOnly = `- [ ] A changeset describing the change and affected packages. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets))
 - [ ] Added or updated documentation
@@ -87,6 +88,21 @@ func TestParse(t *testing.T) {
 						Message: "All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))",
 						Checked: false,
 						Raw:     "- [ ] All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))",
+					},
+				},
+			},
+		},
+		{
+			name: "No Headers",
+			args: args{content: "<!--Checkmate-->\n- [ ] unchecked"},
+			expected: Checklist{
+				Header: "",
+				Raw:    "- [ ] unchecked",
+				Items: []ChecklistItem{
+					{
+						"unchecked",
+						false,
+						"- [ ] unchecked",
 					},
 				},
 			},
