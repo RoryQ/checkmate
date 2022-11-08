@@ -34,22 +34,34 @@ function chooseBinary(versionTag) {
 
 function downloadBinary(versionTag, binary) {
     const url = `https://github.com/RoryQ/checkmate/releases/download/${versionTag}/${binary}.tar.gz`
-    console.log(url)
-    const result = cp.execSync(`curl --location --remote-header-name  ${url} | tar xvz`)
-    console.log(result)
+    console.debug(url)
+    const result = cp.execSync(`curl --silent --location --remote-header-name  ${url} | tar xvz`)
+    console.debug(result.toString())
     return result.status
 }
 
+function determineVersion() {
+    const result = cp.execSync(`curl --silent --location "https://api.github.com/repos/RoryQ/checkmate/releases/latest" | jq  -r ".. .tag_name? // empty"`)
+    return result.toString().trim();
+}
+
 function main() {
-    console.log("started")
-    const versionTag = "v0.0.1"
-    let status = downloadBinary(versionTag, chooseBinary("v0.0.1"))
+    console.debug("started")
+    const versionTag = determineVersion()
+    let status = downloadBinary(versionTag, chooseBinary(versionTag))
     if (typeof status === 'number' && status > 0) {
         process.exit(status)
     }
 
+    console.log(`     _____________/\\/\\________________________________/\\/\\______________________________________/\\/\\_________________
+    ___/\\/\\/\\/\\__/\\/\\__________/\\/\\/\\______/\\/\\/\\/\\__/\\/\\__/\\/\\__/\\/\\/\\__/\\/\\____/\\/\\/\\______/\\/\\/\\/\\/\\____/\\/\\/\\___ 
+   _/\\/\\________/\\/\\/\\/\\____/\\/\\/\\/\\/\\__/\\/\\________/\\/\\/\\/\\____/\\/\\/\\/\\/\\/\\/\\______/\\/\\______/\\/\\______/\\/\\/\\/\\/\\_  
+  _/\\/\\________/\\/\\__/\\/\\__/\\/\\________/\\/\\________/\\/\\/\\/\\____/\\/\\__/\\__/\\/\\__/\\/\\/\\/\\______/\\/\\______/\\/\\_______   
+ ___/\\/\\/\\/\\__/\\/\\__/\\/\\____/\\/\\/\\/\\____/\\/\\/\\/\\__/\\/\\__/\\/\\__/\\/\\______/\\/\\__/\\/\\/\\/\\/\\____/\\/\\/\\______/\\/\\/\\/\\_    
+________________________________________________________________________________________________________________     `)
+
     const spawnSyncReturns = cp.spawnSync(`./checkmate`, { stdio: 'inherit' })
-    console.log(spawnSyncReturns)
+    // console.log(spawnSyncReturns)
     status = spawnSyncReturns.status
     if (typeof status === 'number') {
         process.exit(status)

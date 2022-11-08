@@ -4,7 +4,9 @@ author: "Rory Quinn"
 
 inputs:
   github_token:
-    description: "GITHUB_TOKEN"
+    description: required for automated checklist comments
+  release_proxy:
+    description: proxy for accessing github release artifacts
 runs:
   using: node16
   main: index.js
