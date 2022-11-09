@@ -28,7 +28,7 @@ func TestRun(t *testing.T) {
 
 func setupAction(input string) *githubactions.Action {
 	envMap := map[string]string{
-		"GITHUB_EVENT_PATH":   fmt.Sprintf("../test/events/pull-request.%s.json", input),
+		"GITHUB_EVENT_PATH":   fmt.Sprintf("../../test/events/pull-request.%s.json", input),
 		"GITHUB_STEP_SUMMARY": "/dev/null",
 	}
 	getenv := func(key string) string {

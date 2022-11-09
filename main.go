@@ -5,7 +5,7 @@ import (
 
 	"github.com/sethvargo/go-githubactions"
 
-	"github.com/roryq/checkmate/checkmate"
+	"github.com/roryq/checkmate/pkg/checkmate"
 )
 
 func run() error {
