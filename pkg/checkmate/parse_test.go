@@ -26,7 +26,7 @@ var (
 - [ ] Screenshots attached (for UI changes)
 ` + "- [ ] All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))"
 
-	Indicator              = "<!- Checkmate -->"
+	Indicator              = "<!-- Checkmate -->"
 	ChecklistWithIndicator = insertLine(ChecklistNoIndicator, Indicator, 8)
 
 	checklistOnly = `- [ ] A changeset describing the change and affected packages. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets))
