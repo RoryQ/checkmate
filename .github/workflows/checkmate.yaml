@@ -9,6 +9,8 @@ on:
 
 jobs:
   pr-comment:
+    env:
+      CHECKMATE_DEBUG: true
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3

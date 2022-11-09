@@ -2,6 +2,11 @@ const cp = require('child_process')
 const os = require('os')
 const process = require('process')
 
+function logDebug(...data) {
+    if (!!process.env.CHECKMATE_DEBUG) {
+        console.debug(...data)
+    }
+}
 
 function chooseBinary(versionTag) {
     const platform = os.platform()
@@ -34,9 +39,9 @@ function chooseBinary(versionTag) {
 
 function downloadBinary(versionTag, binary) {
     const url = `https://github.com/RoryQ/checkmate/releases/download/${versionTag}/${binary}.tar.gz`
-    console.debug(url)
+    logDebug(url)
     const result = cp.execSync(`curl --silent --location --remote-header-name  ${url} | tar xvz`)
-    console.debug(result.toString())
+    logDebug(result.toString())
     return result.status
 }
 
@@ -46,7 +51,7 @@ function determineVersion() {
 }
 
 function main() {
-    console.debug("started")
+    logDebug("started")
     const versionTag = determineVersion()
     let status = downloadBinary(versionTag, chooseBinary(versionTag))
     if (typeof status === 'number' && status > 0) {
@@ -61,7 +66,7 @@ function main() {
 ________________________________________________________________________________________________________________     `)
 
     const spawnSyncReturns = cp.spawnSync(`./checkmate`, { stdio: 'inherit' })
-    // console.log(spawnSyncReturns)
+    logDebug(spawnSyncReturns)
     status = spawnSyncReturns.status
     if (typeof status === 'number') {
         process.exit(status)
