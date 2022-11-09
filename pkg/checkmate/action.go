@@ -45,6 +45,9 @@ func getPullRequestBody(action *githubactions.Action) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	body := ghctx.Event["pull_request"].(map[string]any)["body"]
+	body, ok := ghctx.Event["pull_request"].(map[string]any)["body"]
+	if !ok || body == nil {
+		return "", nil
+	}
 	return body.(string), nil
 }
