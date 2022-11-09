@@ -46,6 +46,9 @@ function downloadBinary(versionTag, binary) {
 }
 
 function determineVersion() {
+    if (!!process.env.INPUT_VERSION) {
+        return process.env.INPUT_VERSION
+    }
     const result = cp.execSync(`curl --silent --location "https://api.github.com/repos/RoryQ/checkmate/releases/latest" | jq  -r ".. .tag_name? // empty"`)
     return result.toString().trim();
 }

@@ -7,6 +7,8 @@ inputs:
     description: required for automated checklist comments
   release_proxy:
     description: proxy for accessing github release artifacts
+  version:
+    description: release version of checkmate to run
 runs:
   using: node16
   main: index.js
