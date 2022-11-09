@@ -5,8 +5,8 @@ author: "Rory Quinn"
 inputs:
   github_token:
     description: required for automated checklist comments
-  release_proxy:
-    description: proxy for accessing github release artifacts
+  paths:
+    description: mapping of paths to automated checklists to create
   version:
     description: release version of checkmate to run
 runs:

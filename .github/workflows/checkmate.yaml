@@ -14,7 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: roryq/checkmate@master
+    - uses: roryq/checkmate@test-read-config
+      with:
+        paths: |
+          schema/migrations/**:
+            - I have run the schema export functionality
+            - I have run the schema tests locally
+          docs/**:
+            - I have updated the index
+            - I have run the broken links checker
 
   pr-comment-golang:
     env:
