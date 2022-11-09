@@ -8,11 +8,21 @@ on:
       - reopened
 
 jobs:
-  pr-comment:
+  pr-comment-master:
     env:
       CHECKMATE_DEBUG: true
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - uses: roryq/checkmate@master
 
-    - uses: roryq/checkmate@test-shim
+  pr-comment-golang:
+    env:
+      CHECKMATE_DEBUG: true
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+    - run: go run main.go
