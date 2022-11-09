@@ -15,4 +15,5 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - uses: roryq/checkmate@test-shim
+    - uses: roryq/checkmate@test-version-selector
+        
