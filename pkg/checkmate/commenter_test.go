@@ -2,6 +2,9 @@ package checkmate
 
 import (
 	"context"
+	"encoding/json"
+	"io"
+	"net/http"
 	"testing"
 
 	"github.com/google/go-github/v48/github"
@@ -14,17 +17,17 @@ func Test_commenter(t *testing.T) {
 	ctx := context.Background()
 
 	const schemaMigrationsGlob = "schema/migrations/*.sql"
+	cfg := Config{
+		PathsChecklists: map[string]ChecklistsForPath{
+			schemaMigrationsGlob: []string{
+				"There are no breaking changes in these migrations",
+				"I have notified X team of the new schema changes",
+			},
+		},
+	}
+	schemaMigrationsChecklist := cfg.PathsChecklists[schemaMigrationsGlob].ToChecklistItemsMD(schemaMigrationsGlob)
 	t.Run("NoMatchingFiles", func(t *testing.T) {
 		action, _ := setupAction("edited")
-		cfg := Config{
-			PathsChecklists: map[string]ChecklistsForPath{
-				schemaMigrationsGlob: []string{
-					"There are no breaking changes in these migrations",
-					"I have notified X team of the new schema changes",
-				},
-			},
-		}
-
 		ghMockAPI := mock.NewMockedHTTPClient(
 			mock.WithRequestMatch(
 				mock.GetReposPullsFilesByOwnerByRepoByPullNumber,
@@ -36,21 +39,12 @@ func Test_commenter(t *testing.T) {
 		)
 
 		gh := github.NewClient(ghMockAPI)
-		err := commenter(ctx, cfg, action, gh)
+		_, err := commenter(ctx, cfg, action, gh)
 		assert.NoErr(err)
 	})
 
 	t.Run("MatchingFilesNoExistingComment", func(t *testing.T) {
 		action, _ := setupAction("edited")
-		cfg := Config{
-			PathsChecklists: map[string]ChecklistsForPath{
-				schemaMigrationsGlob: []string{
-					"There are no breaking changes in these migrations",
-					"I have notified X team of the new schema changes",
-				},
-			},
-		}
-
 		ghMockAPI := mock.NewMockedHTTPClient(
 			mock.WithRequestMatch(
 				mock.GetReposPullsFilesByOwnerByRepoByPullNumber,
@@ -59,34 +53,33 @@ func Test_commenter(t *testing.T) {
 					{Filename: github.String("schema/migrations/001_init.sql")},
 				},
 			),
+			// No existing comment
 			mock.WithRequestMatch(
 				mock.GetReposIssuesCommentsByOwnerByRepoByIssueNumber,
 				[]github.IssueComment{},
 			),
-			mock.WithRequestMatch(
+			// assert posts comment
+			mock.WithRequestMatchHandler(
 				mock.PostReposIssuesCommentsByOwnerByRepoByIssueNumber,
-				github.IssueComment{
-					Body: github.String(cfg.PathsChecklists[schemaMigrationsGlob].ToChecklistItemsMD(schemaMigrationsGlob)),
-				},
+				http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+					b, err := io.ReadAll(r.Body)
+
+					assert.NoErr(err)
+					issue := github.IssueComment{}
+
+					assert.NoErr(json.Unmarshal(b, &issue))
+					assert.Equal(*issue.Body, schemaMigrationsChecklist)
+				}),
 			),
 		)
 
 		gh := github.NewClient(ghMockAPI)
-		err := commenter(ctx, cfg, action, gh)
+		_, err := commenter(ctx, cfg, action, gh)
 		assert.NoErr(err)
 	})
 
 	t.Run("MatchingFilesWithExistingComment", func(t *testing.T) {
 		action, _ := setupAction("edited")
-		cfg := Config{
-			PathsChecklists: map[string]ChecklistsForPath{
-				schemaMigrationsGlob: []string{
-					"There are no breaking changes in these migrations",
-					"I have notified X team of the new schema changes",
-				},
-			},
-		}
-
 		ghMockAPI := mock.NewMockedHTTPClient(
 			mock.WithRequestMatch(
 				mock.GetReposPullsFilesByOwnerByRepoByPullNumber,
@@ -99,14 +92,14 @@ func Test_commenter(t *testing.T) {
 				mock.GetReposIssuesCommentsByOwnerByRepoByIssueNumber,
 				[]github.IssueComment{
 					{
-						Body: github.String(cfg.PathsChecklists[schemaMigrationsGlob].ToChecklistItemsMD(schemaMigrationsGlob)),
+						Body: github.String(schemaMigrationsChecklist),
 					},
 				},
 			),
 		)
 
 		gh := github.NewClient(ghMockAPI)
-		err := commenter(ctx, cfg, action, gh)
+		_, err := commenter(ctx, cfg, action, gh)
 		assert.NoErr(err)
 	})
 }

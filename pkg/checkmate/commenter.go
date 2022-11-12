@@ -13,15 +13,15 @@ import (
 	"github.com/sethvargo/go-githubactions"
 )
 
-func commenter(ctx context.Context, cfg Config, action *githubactions.Action, gh *github.Client) error {
+func commenter(ctx context.Context, cfg Config, action *githubactions.Action, gh *github.Client) (string, error) {
 	pr, err := getPullRequestContext(action)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	fileNames, err := listPullRequestFiles(ctx, gh, pr)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	matched := lo.Filter(lo.Keys(cfg.PathsChecklists), func(pathGlob string, _ int) bool {
@@ -35,7 +35,7 @@ func commenter(ctx context.Context, cfg Config, action *githubactions.Action, gh
 
 	if len(matched) == 0 {
 		action.Infof("no matched paths")
-		return nil
+		return "", nil
 	}
 
 	action.Infof("matched paths: [ %s ]", strings.Join(matched, " "))
@@ -43,7 +43,7 @@ func commenter(ctx context.Context, cfg Config, action *githubactions.Action, gh
 
 	comment, err := getExistingComment(ctx, gh, pr)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	return updateComment(ctx, action, gh, pr, checklists, comment)
@@ -68,7 +68,7 @@ func getExistingComment(ctx context.Context, gh *github.Client, pr pullRequestCo
 	return comments[0].GetBody(), nil
 }
 
-func updateComment(ctx context.Context, action *githubactions.Action, gh *github.Client, pr pullRequestContext, checklists map[string]ChecklistsForPath, comment string) error {
+func updateComment(ctx context.Context, action *githubactions.Action, gh *github.Client, pr pullRequestContext, checklists map[string]ChecklistsForPath, comment string) (string, error) {
 	keys := lo.Keys(checklists)
 	sort.StringSlice(keys).Sort()
 
@@ -80,11 +80,11 @@ func updateComment(ctx context.Context, action *githubactions.Action, gh *github
 		_, _, err := gh.Issues.CreateComment(ctx, pr.Owner, pr.Repo, pr.Number, &github.IssueComment{
 			Body: github.String(comment),
 		})
-		return err
+		return comment, err
 	}
 
 	// TODO add / remove checklists based on file changes
-	return nil
+	return comment, nil
 }
 
 type pullRequestContext struct {

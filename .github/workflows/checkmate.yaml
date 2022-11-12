@@ -6,6 +6,7 @@ on:
       - edited
       - opened
       - reopened
+      - synchronize
 
 jobs:
   pr-comment-master:
@@ -20,8 +21,7 @@ jobs:
           schema/migrations/**:
             - I have run the schema export functionality
             - I have run the schema tests locally
-          docs/**:
-            - I have updated the index
+          README.md:
             - I have run the broken links checker
 
   pr-comment-golang:

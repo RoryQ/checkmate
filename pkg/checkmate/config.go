@@ -15,10 +15,11 @@ type Config struct {
 
 type ChecklistsForPath []string
 
-func (c ChecklistsForPath) ToChecklistItemsMD(glob string) string {
-	indicator := fmt.Sprintf("<!-- Checkmate filepath=%s -->\n", glob)
+func (c ChecklistsForPath) ToChecklistItemsMD(filenameGlob string) string {
+	header := fmt.Sprintf("### Checklist for files matching *%s*\n", strings.ReplaceAll(filenameGlob, "*", "\\*"))
+	indicator := fmt.Sprintf("<!-- Checkmate filepath=%s -->\n", filenameGlob)
 	items := lo.Map(c, func(item string, _ int) string { return "- [ ] " + item })
-	return indicator + strings.Join(items, "\n")
+	return header + indicator + strings.Join(items, "\n")
 }
 
 func ConfigFromInputs(action *githubactions.Action) (*Config, error) {
