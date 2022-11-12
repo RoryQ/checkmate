@@ -11,9 +11,10 @@ type reMatch struct {
 	Raw        string
 }
 
-var indicatorRE = regexp.MustCompile(`(?i)<!--\s*Checkmate\s*-->`)
-
-var headerRE = regexp.MustCompile(`(?im)^ {0,3}#{1,6}\s.*`)
+var (
+	indicatorRE = regexp.MustCompile(`(?i)<!--\s*Checkmate\s*-->`)
+	headerRE    = regexp.MustCompile(`(?im)^ {0,3}#{1,6}\s.*`)
+)
 
 func Parse(content string) (list []Checklist) {
 	indicators := findRE(content, indicatorRE)

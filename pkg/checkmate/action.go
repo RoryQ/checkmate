@@ -9,14 +9,23 @@ import (
 )
 
 func Run(ctx context.Context, cfg *Config, action *githubactions.Action) error {
-	descriptionPR, err := getPullRequestBody(action)
+	githubContext, err := action.Context()
+	if err != nil {
+		return err
+	}
+
+	descriptionPR, err := getPullRequestBody(githubContext)
 	if err != nil {
 		return err
 	}
 
 	action.Infof("PR Body: %s", descriptionPR)
 
-	checklists := Parse(descriptionPR)
+	return inspect(descriptionPR, action)
+}
+
+func inspect(body string, action *githubactions.Action) error {
+	checklists := Parse(body)
 
 	action.Debugf("Checklists: %v", checklists)
 
@@ -40,11 +49,7 @@ func Run(ctx context.Context, cfg *Config, action *githubactions.Action) error {
 	return nil
 }
 
-func getPullRequestBody(action *githubactions.Action) (string, error) {
-	ghctx, err := action.Context()
-	if err != nil {
-		return "", err
-	}
+func getPullRequestBody(ghctx *githubactions.GitHubContext) (string, error) {
 	body, ok := ghctx.Event["pull_request"].(map[string]any)["body"]
 	if !ok || body == nil {
 		return "", nil

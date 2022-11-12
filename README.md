@@ -21,7 +21,7 @@ items is one without empty lines in-between.
 - [ ] Added or updated documentation
 - [x] Tests for new functionality and regression tests for bug fixes
 
-### This checklist will not be validated
+#### This checklist will not be validated
 
 - [ ] This is ignored
 - [ ] This is ignored
