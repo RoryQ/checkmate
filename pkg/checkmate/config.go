@@ -8,6 +8,8 @@ import (
 	"github.com/samber/lo"
 	"github.com/sethvargo/go-githubactions"
 	"gopkg.in/yaml.v3"
+
+	"github.com/roryq/checkmate/pkg/checkmate/inputs"
 )
 
 type Config struct {
@@ -28,7 +30,7 @@ func ConfigFromInputs(action *githubactions.Action) (*Config, error) {
 	c := Config{
 		PathsChecklists: map[string]ChecklistsForPath{},
 	}
-	checklistPaths := action.GetInput("paths")
+	checklistPaths := action.GetInput(inputs.Paths)
 	if checklistPaths == "" {
 		return &c, nil
 	}

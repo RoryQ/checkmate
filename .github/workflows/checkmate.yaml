@@ -3,9 +3,11 @@ name: Checkmate
 on:
   pull_request:
     types:
+      # For PR description inspection only
       - edited
       - opened
       - reopened
+      # For changeset automatic checklist. Also requires GITHUB_TOKEN to be set
       - synchronize
 
 jobs:
@@ -37,4 +39,5 @@ jobs:
       env:
         INPUT_PATHS: |
           README.md:
-            - I have run the broken links checker 
+            - I have run the broken links checker
+        INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

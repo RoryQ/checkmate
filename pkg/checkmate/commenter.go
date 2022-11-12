@@ -51,40 +51,52 @@ func commenter(ctx context.Context, cfg Config, action *githubactions.Action, gh
 
 var commenterIndicatorRE = regexp.MustCompile(`(?i)<!--\s*Checkmate\s+filepath=.*?-->`)
 
-func getExistingComment(ctx context.Context, gh *github.Client, pr pullRequestContext) (string, error) {
+func getExistingComment(ctx context.Context, gh *github.Client, pr pullRequestContext) (*github.IssueComment, error) {
 	comments, _, err := gh.Issues.ListComments(ctx, pr.Owner, pr.Repo, pr.Number, nil)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	comments = lo.Filter(comments, func(c *github.IssueComment, _ int) bool {
-		return commenterIndicatorRE.MatchString(c.GetBody())
+		return isBotID(c.GetUser().GetID()) &&
+			commenterIndicatorRE.MatchString(c.GetBody())
 	})
 
 	if len(comments) == 0 {
-		return "", nil
+		return nil, nil
 	}
 
-	return comments[0].GetBody(), nil
+	return comments[0], nil
 }
 
-func updateComment(ctx context.Context, action *githubactions.Action, gh *github.Client, pr pullRequestContext, checklists map[string]ChecklistsForPath, comment string) (string, error) {
+func isBotID(id int64) bool {
+	const GithubActionsBotID = 41898282
+	return id == GithubActionsBotID
+}
+
+func updateComment(ctx context.Context, action *githubactions.Action, gh *github.Client, pr pullRequestContext, checklists map[string]ChecklistsForPath, comment *github.IssueComment) (string, error) {
 	keys := lo.Keys(checklists)
 	sort.StringSlice(keys).Sort()
 
-	if comment == "" {
+	if comment.GetBody() == "" {
 		action.Infof("Writing new automated checklist")
-		comment := strings.Join(lo.Map(keys, func(k string, _ int) string {
+
+		allChecklists := strings.Join(lo.Map(keys, func(k string, _ int) string {
 			return checklists[k].ToChecklistItemsMD(k)
 		}), "\n\n")
+
+		preamble := "Thanks for your contribution! Please complete the following tasks related to your changes and tick" +
+			"the checklists when complete."
+
+		commentBody := preamble + "\n" + allChecklists
 		_, _, err := gh.Issues.CreateComment(ctx, pr.Owner, pr.Repo, pr.Number, &github.IssueComment{
-			Body: github.String(comment),
+			Body: github.String(commentBody),
 		})
-		return comment, err
+		return commentBody, err
 	}
 
 	// TODO add / remove checklists based on file changes
-	return comment, nil
+	return comment.GetBody(), nil
 }
 
 type pullRequestContext struct {
