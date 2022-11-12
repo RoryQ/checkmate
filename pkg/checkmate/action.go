@@ -5,13 +5,29 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/google/go-github/v48/github"
 	"github.com/sethvargo/go-githubactions"
 )
 
-func Run(ctx context.Context, cfg *Config, action *githubactions.Action) error {
+func Run(ctx context.Context, cfg *Config, action *githubactions.Action, gh *github.Client) error {
 	githubContext, err := action.Context()
 	if err != nil {
 		return err
+	}
+
+	if len(cfg.PathsChecklists) > 0 {
+		action.Infof("Checking changeset for configured paths")
+		comment, err := commenter(ctx, *cfg, action, gh)
+		if err != nil {
+			return err
+		}
+
+		if comment != "" {
+			action.Infof("Comment checklist %s", comment)
+			if err := inspect(comment, action); err != nil {
+				return err
+			}
+		}
 	}
 
 	descriptionPR, err := getPullRequestBody(githubContext)

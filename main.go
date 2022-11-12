@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	"github.com/google/go-github/v48/github"
 	"github.com/sethvargo/go-githubactions"
 
 	"github.com/roryq/checkmate/pkg/checkmate"
@@ -17,7 +18,8 @@ func run() error {
 		return err
 	}
 
-	return checkmate.Run(ctx, cfg, action)
+	gh := github.NewClient(nil)
+	return checkmate.Run(ctx, cfg, action, gh)
 }
 
 func main() {

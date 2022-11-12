@@ -16,20 +16,20 @@ func TestRun(t *testing.T) {
 
 	t.Run("CheckedSuccess", func(t *testing.T) {
 		action, _ := setupAction("edited-checked")
-		err := Run(context.Background(), new(Config), action)
+		err := Run(context.Background(), new(Config), action, nil)
 		assert.NoErr(err)
 	})
 
 	t.Run("UncheckedFailure", func(t *testing.T) {
 		action, _ := setupAction("edited")
-		err := Run(context.Background(), new(Config), action)
+		err := Run(context.Background(), new(Config), action, nil)
 		require.True(err != nil)
 		assert.Equal("not all checklists are completed", err.Error())
 	})
 
 	t.Run("OpenedWithNullBody", func(t *testing.T) {
 		action, _ := setupAction("opened.with-null-body")
-		err := Run(context.Background(), new(Config), action)
+		err := Run(context.Background(), new(Config), action, nil)
 		assert.NoErr(err)
 	})
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/niemeyer/pretty"
 	"github.com/samber/lo"
 	"github.com/sethvargo/go-githubactions"
 	"gopkg.in/yaml.v3"
@@ -23,6 +24,7 @@ func (c ChecklistsForPath) ToChecklistItemsMD(filenameGlob string) string {
 }
 
 func ConfigFromInputs(action *githubactions.Action) (*Config, error) {
+	action.Infof("Reading Config From Inputs")
 	c := Config{
 		PathsChecklists: map[string]ChecklistsForPath{},
 	}
@@ -34,6 +36,8 @@ func ConfigFromInputs(action *githubactions.Action) (*Config, error) {
 	if err := yaml.Unmarshal([]byte(checklistPaths), &c.PathsChecklists); err != nil {
 		return nil, err
 	}
+
+	action.Infof("Config: %s", pretty.Sprint(c))
 
 	return &c, nil
 }
