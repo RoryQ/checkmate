@@ -3,9 +3,17 @@ name: Checkmate
 on:
   pull_request:
     types:
+      # For PR description inspection only
       - edited
       - opened
       - reopened
+      # For changeset automatic checklist. Also requires GITHUB_TOKEN to be set
+      - synchronize
+  issue_comment:
+    types:
+      - edited
+      - created
+      - deleted
 
 jobs:
   pr-comment-master:
@@ -26,3 +34,8 @@ jobs:
       with:
         go-version: 1.19
     - run: go run main.go
+      env:
+        INPUT_PATHS: |
+          "**/*.go":
+            - Dummy Test Item
+        INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

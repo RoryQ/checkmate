@@ -54,6 +54,7 @@ function determineVersion() {
 }
 
 function main() {
+    logDebug(process.env.INPUT_PATHS)
     logDebug("started")
     const versionTag = determineVersion()
     let status = downloadBinary(versionTag, chooseBinary(versionTag))

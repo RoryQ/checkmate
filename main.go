@@ -2,10 +2,14 @@ package main
 
 import (
 	"context"
+	"net/http"
 
+	"github.com/google/go-github/v48/github"
 	"github.com/sethvargo/go-githubactions"
+	"golang.org/x/oauth2"
 
 	"github.com/roryq/checkmate/pkg/checkmate"
+	"github.com/roryq/checkmate/pkg/checkmate/inputs"
 )
 
 func run() error {
@@ -17,7 +21,16 @@ func run() error {
 		return err
 	}
 
-	return checkmate.Run(ctx, cfg, action)
+	var tc *http.Client
+	if token := action.GetInput(inputs.GithubToken); token != "" {
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: token},
+		)
+		tc = oauth2.NewClient(ctx, ts)
+	}
+
+	gh := github.NewClient(tc)
+	return checkmate.Run(ctx, cfg, action, gh)
 }
 
 func main() {

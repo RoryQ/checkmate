@@ -12,8 +12,14 @@ type ChecklistItem struct {
 
 type Checklist struct {
 	Items  []ChecklistItem
+	Meta   ChecklistMetadata
 	Header string
 	Raw    string
+}
+
+type ChecklistMetadata struct {
+	RawIndicator string
+	FilenameGlob string
 }
 
 func (c Checklist) AllChecked() bool {
@@ -29,4 +35,20 @@ func (c Checklist) AllChecked() bool {
 
 func (c Checklist) Summary() string {
 	return fmt.Sprintf("%s\n%s", c.Header, c.Raw)
+}
+
+func ParseIndicator(s string) ChecklistMetadata {
+	match := indicatorRE.FindStringSubmatch(s)
+
+	namedGroupMatch := func(name string) string {
+		if i := indicatorRE.SubexpIndex(name); i > 0 {
+			return match[i]
+		}
+		return ""
+	}
+
+	return ChecklistMetadata{
+		RawIndicator: s,
+		FilenameGlob: namedGroupMatch("filepath"),
+	}
 }

@@ -6,7 +6,7 @@
 
 - [x] Fails validation until all configured checklists are checked.
 - [ ] Support for validating one-of lists i.e. radio button
-- [ ] Automatically creates checklists based on file changes.
+- [x] Automatically creates checklists based on file changes.
 
 ## Configuration
 
@@ -21,7 +21,7 @@ items is one without empty lines in-between.
 - [ ] Added or updated documentation
 - [x] Tests for new functionality and regression tests for bug fixes
 
-### This checklist will not be validated
+#### This checklist will not be validated
 
 - [ ] This is ignored
 - [ ] This is ignored
