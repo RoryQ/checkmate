@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/matryer/is"
 )
 
@@ -43,51 +44,54 @@ func TestParse(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		expected Checklist
+		expected []Checklist
 	}{
 		{
 			name:     "Empty",
 			args:     args{},
-			expected: Checklist{},
+			expected: nil,
 		},
 		{
-			name: "No Indicator",
-			args: args{content: ChecklistNoIndicator},
-			expected: Checklist{
-				Raw: ChecklistNoIndicator,
-			},
+			name:     "No Indicator",
+			args:     args{content: ChecklistNoIndicator},
+			expected: nil,
 		},
 		{
 			name: "With Indicator",
 			args: args{content: ChecklistWithIndicator},
-			expected: Checklist{
-				Raw:    checklistOnly,
-				Header: "#### :heavy_check_mark: Checklist",
-				Items: []ChecklistItem{
-					{
-						Message: "A changeset describing the change and affected packages. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets))",
-						Checked: false,
-						Raw:     `- [ ] A changeset describing the change and affected packages. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets))`,
+			expected: []Checklist{
+				{
+					Raw:    checklistOnly,
+					Header: "#### :heavy_check_mark: Checklist",
+					Meta: ChecklistMetadata{
+						RawIndicator: Indicator,
 					},
-					{
-						Message: "Added or updated documentation",
-						Checked: false,
-						Raw:     `- [ ] Added or updated documentation`,
-					},
-					{
-						Message: "Tests for new functionality and regression tests for bug fixes",
-						Checked: true,
-						Raw:     `- [x] Tests for new functionality and regression tests for bug fixes`,
-					},
-					{
-						Message: "Screenshots attached (for UI changes)",
-						Checked: false,
-						Raw:     `- [ ] Screenshots attached (for UI changes)`,
-					},
-					{
-						Message: "All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))",
-						Checked: false,
-						Raw:     "- [ ] All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))",
+					Items: []ChecklistItem{
+						{
+							Message: "A changeset describing the change and affected packages. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets))",
+							Checked: false,
+							Raw:     `- [ ] A changeset describing the change and affected packages. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets))`,
+						},
+						{
+							Message: "Added or updated documentation",
+							Checked: false,
+							Raw:     `- [ ] Added or updated documentation`,
+						},
+						{
+							Message: "Tests for new functionality and regression tests for bug fixes",
+							Checked: true,
+							Raw:     `- [x] Tests for new functionality and regression tests for bug fixes`,
+						},
+						{
+							Message: "Screenshots attached (for UI changes)",
+							Checked: false,
+							Raw:     `- [ ] Screenshots attached (for UI changes)`,
+						},
+						{
+							Message: "All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))",
+							Checked: false,
+							Raw:     "- [ ] All your commits have a `Signed-off-by` line in the message. ([more info](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#developer-certificate-of-origin))",
+						},
 					},
 				},
 			},
@@ -95,14 +99,19 @@ func TestParse(t *testing.T) {
 		{
 			name: "No Headers",
 			args: args{content: "<!--Checkmate-->\n- [ ] unchecked"},
-			expected: Checklist{
-				Header: "",
-				Raw:    "- [ ] unchecked",
-				Items: []ChecklistItem{
-					{
-						"unchecked",
-						false,
-						"- [ ] unchecked",
+			expected: []Checklist{
+				{
+					Header: "",
+					Meta: ChecklistMetadata{
+						RawIndicator: "<!--Checkmate-->",
+					},
+					Raw: "- [ ] unchecked",
+					Items: []ChecklistItem{
+						{
+							"unchecked",
+							false,
+							"- [ ] unchecked",
+						},
 					},
 				},
 			},
@@ -110,22 +119,9 @@ func TestParse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert := is.NewRelaxed(t)
 			actualList := Parse(tt.args.content)
-			for _, actual := range actualList {
-				assert.Equal(actual.Raw, tt.expected.Raw)
-				assert.Equal(actual.Header, tt.expected.Header)
-
-				for i := range tt.expected.Items {
-					var actualItem ChecklistItem
-					if len(actual.Items) > i {
-						actualItem = actual.Items[i]
-					}
-					expectedItem := tt.expected.Items[i]
-					assert.Equal(actualItem.Message, expectedItem.Message)
-					assert.Equal(actualItem.Checked, expectedItem.Checked)
-					assert.Equal(actualItem.Raw, expectedItem.Raw)
-				}
+			if !cmp.Equal(actualList, tt.expected) {
+				t.Error(cmp.Diff(actualList, tt.expected))
 			}
 		})
 	}

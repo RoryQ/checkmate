@@ -22,6 +22,7 @@ func Run(ctx context.Context, cfg *Config, action *githubactions.Action, gh *git
 		return err
 	}
 
+	checklists := []Checklist{}
 	if len(cfg.PathsChecklists) > 0 {
 		action.Infof("Checking changeset for configured paths")
 		comment, err := commenter(ctx, *cfg, action, pr)
@@ -31,9 +32,7 @@ func Run(ctx context.Context, cfg *Config, action *githubactions.Action, gh *git
 
 		if comment != "" {
 			action.Infof("Comment checklist %s", comment)
-			if err := inspect(comment, action); err != nil {
-				return err
-			}
+			checklists = Parse(comment)
 		}
 	}
 
@@ -44,12 +43,11 @@ func Run(ctx context.Context, cfg *Config, action *githubactions.Action, gh *git
 
 	action.Infof("PR Body: %s", descriptionPR)
 
-	return inspect(descriptionPR, action)
+	checklists = append(Parse(descriptionPR), checklists...)
+	return inspect(checklists, action)
 }
 
-func inspect(body string, action *githubactions.Action) error {
-	checklists := Parse(body)
-
+func inspect(checklists []Checklist, action *githubactions.Action) error {
 	action.Debugf("Checklists: %v", checklists)
 
 	action.AddStepSummary("_The following checklists were found and validated:_\n")

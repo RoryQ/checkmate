@@ -12,7 +12,7 @@ type reMatch struct {
 }
 
 var (
-	indicatorRE = regexp.MustCompile(`(?i)<!--\s*Checkmate\s*-->`)
+	indicatorRE = regexp.MustCompile(`(?i)<!--\s*Checkmate\s*(filepath=(?P<filepath>.*?))?\s*-->`)
 	headerRE    = regexp.MustCompile(`(?im)^ {0,3}#{1,6}\s.*`)
 )
 
@@ -37,6 +37,7 @@ func Parse(content string) (list []Checklist) {
 			Items:  blockToItems(checklists[c]),
 			Header: closestHeaderTo(headers, indLineNumber),
 			Raw:    checklists[c].Raw,
+			Meta:   ParseIndicator(ind.Raw),
 		})
 	}
 

@@ -3,6 +3,8 @@ module github.com/roryq/checkmate
 go 1.18
 
 require (
+	github.com/bmatcuk/doublestar/v4 v4.4.0
+	github.com/google/go-cmp v0.5.9
 	github.com/google/go-github/v48 v48.0.0
 	github.com/matryer/is v1.4.0
 	github.com/migueleliasweb/go-github-mock v0.0.13

@@ -9,6 +9,11 @@ on:
       - reopened
       # For changeset automatic checklist. Also requires GITHUB_TOKEN to be set
       - synchronize
+  issue_comment:
+    types:
+      - edited
+      - created
+      - deleted
 
 jobs:
   pr-comment-master:
@@ -17,14 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: roryq/checkmate@test-read-config
-      with:
-        paths: |
-          schema/migrations/**:
-            - I have run the schema export functionality
-            - I have run the schema tests locally
-          README.md:
-            - I have run the broken links checker
+    - uses: roryq/checkmate@master
 
   pr-comment-golang:
     env:
@@ -38,6 +36,6 @@ jobs:
     - run: go run main.go
       env:
         INPUT_PATHS: |
-          README.md:
-            - I have run the broken links checker
+          "**/*.go":
+            - Dummy Test Item
         INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

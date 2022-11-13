@@ -31,6 +31,11 @@ func (pr Client) CreateComment(ctx context.Context, comment *github.IssueComment
 	return comment, err
 }
 
+func (pr Client) EditComment(ctx context.Context, comment *github.IssueComment) (*github.IssueComment, error) {
+	comment, _, err := pr.gh.Issues.EditComment(ctx, pr.Owner, pr.Repo, comment.GetID(), comment)
+	return comment, err
+}
+
 func NewClient(action *githubactions.Action, gh *github.Client) (Client, error) {
 	ctx, err := action.Context()
 	if err != nil {
