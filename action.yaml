@@ -4,11 +4,13 @@ author: "Rory Quinn"
 
 inputs:
   github_token:
-    description: required for automated checklist comments
+    description: Required for automated checklist comments.
   paths:
-    description: mapping of paths to automated checklists to create
+    description: Mapping of paths to automated checklists to create.
+  preamble:
+    description: Custom message to show in the automated checklist comment.
   version:
-    description: release version of checkmate to run
+    description: Release version of checkmate to run.
 runs:
   using: node16
   main: index.js

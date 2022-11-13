@@ -7,6 +7,8 @@ import (
 
 	"github.com/google/go-github/v48/github"
 	"github.com/sethvargo/go-githubactions"
+
+	pr2 "github.com/roryq/checkmate/pkg/pullrequest"
 )
 
 func Run(ctx context.Context, cfg *Config, action *githubactions.Action, gh *github.Client) error {
@@ -15,9 +17,14 @@ func Run(ctx context.Context, cfg *Config, action *githubactions.Action, gh *git
 		return err
 	}
 
+	pr, err := pr2.NewClient(action, gh)
+	if err != nil {
+		return err
+	}
+
 	if len(cfg.PathsChecklists) > 0 {
 		action.Infof("Checking changeset for configured paths")
-		comment, err := commenter(ctx, *cfg, action, gh)
+		comment, err := commenter(ctx, *cfg, action, pr)
 		if err != nil {
 			return err
 		}

@@ -5,11 +5,15 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/google/go-github/v48/github"
 	"github.com/matryer/is"
 	"github.com/migueleliasweb/go-github-mock/src/mock"
+
+	"github.com/roryq/checkmate/pkg/ptr"
+	"github.com/roryq/checkmate/pkg/pullrequest"
 )
 
 func Test_commenter(t *testing.T) {
@@ -32,14 +36,14 @@ func Test_commenter(t *testing.T) {
 			mock.WithRequestMatch(
 				mock.GetReposPullsFilesByOwnerByRepoByPullNumber,
 				[]github.CommitFile{
-					{Filename: github.String("README.md")},
-					//{Filename: github.String("schema/migrations/001_init.sql")},
+					{Filename: ptr.To("README.md")},
 				},
 			),
 		)
 
-		gh := github.NewClient(ghMockAPI)
-		_, err := commenter(ctx, cfg, action, gh)
+		pr, err := pullrequest.NewClient(action, github.NewClient(ghMockAPI))
+		assert.NoErr(err)
+		_, err = commenter(ctx, cfg, action, pr)
 		assert.NoErr(err)
 	})
 
@@ -49,8 +53,8 @@ func Test_commenter(t *testing.T) {
 			mock.WithRequestMatch(
 				mock.GetReposPullsFilesByOwnerByRepoByPullNumber,
 				[]github.CommitFile{
-					{Filename: github.String("README.md")},
-					{Filename: github.String("schema/migrations/001_init.sql")},
+					{Filename: ptr.To("README.md")},
+					{Filename: ptr.To("schema/migrations/001_init.sql")},
 				},
 			),
 			// No existing comment
@@ -58,6 +62,7 @@ func Test_commenter(t *testing.T) {
 				mock.GetReposIssuesCommentsByOwnerByRepoByIssueNumber,
 				[]github.IssueComment{},
 			),
+
 			// assert posts comment
 			mock.WithRequestMatchHandler(
 				mock.PostReposIssuesCommentsByOwnerByRepoByIssueNumber,
@@ -68,13 +73,14 @@ func Test_commenter(t *testing.T) {
 					issue := github.IssueComment{}
 
 					assert.NoErr(json.Unmarshal(b, &issue))
-					assert.Equal(*issue.Body, schemaMigrationsChecklist)
+					assert.True(strings.Contains(issue.GetBody(), schemaMigrationsChecklist))
 				}),
 			),
 		)
 
-		gh := github.NewClient(ghMockAPI)
-		_, err := commenter(ctx, cfg, action, gh)
+		pr, err := pullrequest.NewClient(action, github.NewClient(ghMockAPI))
+		assert.NoErr(err)
+		_, err = commenter(ctx, cfg, action, pr)
 		assert.NoErr(err)
 	})
 
@@ -84,22 +90,24 @@ func Test_commenter(t *testing.T) {
 			mock.WithRequestMatch(
 				mock.GetReposPullsFilesByOwnerByRepoByPullNumber,
 				[]github.CommitFile{
-					{Filename: github.String("README.md")},
-					{Filename: github.String("schema/migrations/001_init.sql")},
+					{Filename: ptr.To("README.md")},
+					{Filename: ptr.To("schema/migrations/001_init.sql")},
 				},
 			),
 			mock.WithRequestMatch(
 				mock.GetReposIssuesCommentsByOwnerByRepoByIssueNumber,
 				[]github.IssueComment{
 					{
-						Body: github.String(schemaMigrationsChecklist),
+						Body: ptr.To(schemaMigrationsChecklist),
+						User: &github.User{ID: ptr.To(GithubActionsBotID)},
 					},
 				},
 			),
 		)
 
-		gh := github.NewClient(ghMockAPI)
-		_, err := commenter(ctx, cfg, action, gh)
+		gh, err := pullrequest.NewClient(action, github.NewClient(ghMockAPI))
+		assert.NoErr(err)
+		_, err = commenter(ctx, cfg, action, gh)
 		assert.NoErr(err)
 	})
 }

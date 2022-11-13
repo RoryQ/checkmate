@@ -14,6 +14,7 @@ import (
 
 type Config struct {
 	PathsChecklists map[string]ChecklistsForPath
+	Preamble        string
 }
 
 type ChecklistsForPath []string
@@ -25,6 +26,9 @@ func (c ChecklistsForPath) ToChecklistItemsMD(filenameGlob string) string {
 	return header + indicator + strings.Join(items, "\n")
 }
 
+const PreambleDefaultMessage = "Thanks for your contribution!\n Please complete the following tasks related to your changes and tick " +
+	"the checklists when complete."
+
 func ConfigFromInputs(action *githubactions.Action) (*Config, error) {
 	action.Infof("Reading Config From Inputs")
 	c := Config{
@@ -33,6 +37,11 @@ func ConfigFromInputs(action *githubactions.Action) (*Config, error) {
 	checklistPaths := action.GetInput(inputs.Paths)
 	if checklistPaths == "" {
 		return &c, nil
+	}
+
+	c.Preamble = action.GetInput(inputs.Preamble)
+	if c.Preamble == "" {
+		c.Preamble = PreambleDefaultMessage
 	}
 
 	if err := yaml.Unmarshal([]byte(checklistPaths), &c.PathsChecklists); err != nil {
