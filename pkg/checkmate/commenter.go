@@ -149,7 +149,7 @@ func listPullRequestFiles(ctx context.Context, pr pullrequest.Client) ([]string,
 
 func sortedByFilename(cs []Checklist) []Checklist {
 	sort.SliceStable(cs, func(i, j int) bool {
-		return cs[i].Meta.FilenameGlob > cs[j].Meta.FilenameGlob
+		return cs[i].Meta.FilenameGlob < cs[j].Meta.FilenameGlob
 	})
 	return cs
 }
