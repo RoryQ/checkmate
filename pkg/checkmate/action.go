@@ -52,18 +52,18 @@ func inspect(checklists []Checklist, action *githubactions.Action) error {
 
 	action.AddStepSummary("_The following checklists were found and validated:_\n")
 
-	allChecked := true
+	allCompleted := true
 	for _, checklist := range checklists {
-		allChecked = allChecked && checklist.AllChecked()
+		allCompleted = allCompleted && checklist.ChecklistCompleted()
 
-		if !checklist.AllChecked() {
+		if !checklist.ChecklistCompleted() {
 			headerNoPrefix := strings.TrimPrefix(strings.TrimSpace(checklist.Header), "#")
 			action.Errorf("Checklist not completed %s", headerNoPrefix)
 		}
-		action.AddStepSummary(checklist.Summary())
+		action.AddStepSummary(checklist.MarkdownSummary())
 	}
 
-	if !allChecked {
+	if !allCompleted {
 		return errors.New("not all checklists are completed")
 	}
 
