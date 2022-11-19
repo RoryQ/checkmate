@@ -89,11 +89,11 @@ jobs:
             schema/migrations/*.sql:
               - There are no breaking changes in these migrations
               - I have notified X team of the new schema changes
-            bigquery/*.sql:
-              - <!--Checkmate select=1-->
-              - Contains DML only
-              - Contains DDL only
-              - Contains DDL and DML
+            database/*.go:
+              - <!--Checkmate select=2-->
+              - Strong Consistency
+              - Availability
+              - Partition Tolerance
 ```
 
 Which will create and update a comment when the changeset files match the configured patterns.
@@ -112,9 +112,9 @@ Please complete the following tasks related to your changes and tick the checkli
 - [ ] There are no breaking changes in these migrations
 - [ ] I have notified X team of the new schema changes
 
-### Checklist for files matching *bigquery/\*.sql*
-<!-- Checkmate select=1 filepath=bigquery/*.sql -->
-- [ ] Contains DML only
-- [ ] Contains DDL only
-- [ ] Contains DDL and DML
+### Select 2 for files matching *database/\*.go*
+<!-- Checkmate select=2 filepath=database/*.go -->
+- [ ] Strong Consistency
+- [ ] Availability
+- [ ] Partition Tolerance
 ```
