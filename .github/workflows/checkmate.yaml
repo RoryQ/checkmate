@@ -37,5 +37,6 @@ jobs:
       env:
         INPUT_PATHS: |
           "**/*.go":
+            - <!--checkmate select=1-->
             - Dummy Test Item
         INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

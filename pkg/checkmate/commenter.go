@@ -22,6 +22,7 @@ func commenter(ctx context.Context, cfg Config, action *githubactions.Action, pr
 		return "", err
 	}
 
+	action.Debugf("checking files: \n%s", strings.Join(fileNames, "\n"))
 	matched := lo.Filter(lo.Keys(cfg.PathsChecklists), func(pathGlob string, _ int) bool {
 		for _, name := range fileNames {
 			if matched, _ := doublestar.Match(pathGlob, name); matched {

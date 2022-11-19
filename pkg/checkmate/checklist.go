@@ -74,17 +74,8 @@ func markdownEnquote(s string) string {
 }
 
 func ParseIndicator(s string) ChecklistMetadata {
-	match := indicatorRE.FindStringSubmatch(s)
-
-	namedGroupMatch := func(name string) string {
-		if i := indicatorRE.SubexpIndex(name); i > 0 {
-			return match[i]
-		}
-		return ""
-	}
-
 	var selectCount int
-	if selectRaw := namedGroupMatch("select"); selectRaw != "" {
+	if selectRaw := indicatorGroupMatch(s, "select"); selectRaw != "" {
 		var err error
 		selectCount, err = strconv.Atoi(selectRaw)
 		if err != nil {
@@ -94,7 +85,15 @@ func ParseIndicator(s string) ChecklistMetadata {
 
 	return ChecklistMetadata{
 		RawIndicator: s,
-		FilenameGlob: namedGroupMatch("filepath"),
+		FilenameGlob: indicatorGroupMatch(s, "filepath"),
 		SelectCount:  selectCount,
 	}
+}
+
+func indicatorGroupMatch(s, name string) string {
+	match := indicatorRE.FindStringSubmatch(s)
+	if i := indicatorRE.SubexpIndex(name); i > 0 && i < len(match) {
+		return match[i]
+	}
+	return ""
 }

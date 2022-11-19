@@ -20,8 +20,19 @@ type Config struct {
 type ChecklistsForPath []string
 
 func (c ChecklistsForPath) ToChecklistItemsMD(filenameGlob string) string {
+	if len(c) == 0 {
+		return ""
+	}
 	header := fmt.Sprintf("### Checklist for files matching *%s*\n", strings.ReplaceAll(filenameGlob, "*", "\\*"))
-	indicator := fmt.Sprintf("<!-- Checkmate filepath=%s -->\n", filenameGlob)
+
+	var indicator string
+	if selectCount := indicatorGroupMatch(c[0], "select"); selectCount != "" {
+		indicator = fmt.Sprintf("<!-- Checkmate select=%s filepath=%s -->\n", selectCount, filenameGlob)
+		items := lo.Map(c[1:], func(item string, _ int) string { return "- [ ] " + item })
+		return header + indicator + strings.Join(items, "\n")
+	}
+
+	indicator = fmt.Sprintf("<!-- Checkmate filepath=%s -->\n", filenameGlob)
 	items := lo.Map(c, func(item string, _ int) string { return "- [ ] " + item })
 	return header + indicator + strings.Join(items, "\n")
 }

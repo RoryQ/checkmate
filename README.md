@@ -4,13 +4,13 @@
 
 ## Features
 
-- [x] Fails validation until all configured checklists are checked.
-- [ ] Support for validating one-of lists i.e. radio button
-- [x] Automatically creates checklists based on file changes.
+- [x] Fails validation until all configured checklists in the pull request description are checked.
+- [x] Automatic checklists triggered on files modified in the pull request.
+- [x] Support for validating select lists i.e. radio button.
 
 ## Configuration
 
-### PR Description Checks
+### Pull Request Description Checks
 
 In your PR description or issue template, place `<!--Checkmate-->` above the checklist block you want validated. A block of checklist
 items is one without empty lines in-between.
@@ -28,6 +28,15 @@ items is one without empty lines in-between.
 - [ ] This is ignored
 - [ ] This is ignored
 - [ ] This is ignored
+
+
+#### Oasis or Blur?
+This select list validates that only one item is selected.
+
+<!--Checkmate select=1-->
+- [ ] Oasis
+- [ ] Blur
+
 ```
 
 Then configure the action in your workflow like
@@ -47,9 +56,15 @@ jobs:
       uses: roryq/checkmate@master
 ```
 
-### Automated checklists
+### Automatic checklists
 
-To enable the automated checklists configure the paths and the github_token inputs, and add the synchronize event.
+Similar to the [workflow triggers on file paths](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-including-paths), 
+you can configure Checkmate to write a checklist comment on a pull request which will be validated along with the
+pull request description.
+
+To enable the automated checklists configure the `with.paths` and the `with.github_token` inputs, and add the synchronize event.
+
+If you want to use a SelectList then the first item should be the `<!--Checkmate select=1-->` comment.
 
 ```yaml
 on:
@@ -74,6 +89,11 @@ jobs:
             schema/migrations/*.sql:
               - There are no breaking changes in these migrations
               - I have notified X team of the new schema changes
+            bigquery/*.sql:
+              - <!--Checkmate select=1-->
+              - Contains DML only
+              - Contains DDL only
+              - Contains DDL and DML
 ```
 
 Which will create and update a comment when the changeset files match the configured patterns.
@@ -91,4 +111,10 @@ Please complete the following tasks related to your changes and tick the checkli
 <!-- Checkmate filepath=schema/migrations/*.sql -->
 - [ ] There are no breaking changes in these migrations
 - [ ] I have notified X team of the new schema changes
+
+### Checklist for files matching *bigquery/\*.sql*
+<!-- Checkmate select=1 filepath=bigquery/*.sql -->
+- [ ] Contains DML only
+- [ ] Contains DDL only
+- [ ] Contains DDL and DML
 ```
