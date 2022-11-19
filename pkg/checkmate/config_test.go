@@ -35,7 +35,7 @@ func TestChecklistsForPath_ToChecklistItemsMD(t *testing.T) {
 				"item 2",
 			},
 			filenameGlob: "**/*.go",
-			want: `### Checklist for files matching *\*\*/\*.go*
+			want: `### Select 1 for files matching *\*\*/\*.go*
 <!-- Checkmate select=1 filepath=**/*.go -->
 - [ ] item 1
 - [ ] item 2`,

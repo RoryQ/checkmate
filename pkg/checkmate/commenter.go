@@ -2,7 +2,6 @@ package checkmate
 
 import (
 	"context"
-	"regexp"
 	"sort"
 	"strings"
 
@@ -22,7 +21,7 @@ func commenter(ctx context.Context, cfg Config, action *githubactions.Action, pr
 		return "", err
 	}
 
-	action.Debugf("checking files: \n%s", strings.Join(fileNames, "\n"))
+	action.Infof("checking file paths: \n%s", strings.Join(fileNames, "\n"))
 	matched := lo.Filter(lo.Keys(cfg.PathsChecklists), func(pathGlob string, _ int) bool {
 		for _, name := range fileNames {
 			if matched, _ := doublestar.Match(pathGlob, name); matched {
@@ -48,8 +47,6 @@ func commenter(ctx context.Context, cfg Config, action *githubactions.Action, pr
 	return updateComment(ctx, action, cfg, pr, checklists, comment)
 }
 
-var commenterIndicatorRE = regexp.MustCompile(`(?i)<!--\s*Checkmate\s+filepath=.*?-->`)
-
 func getExistingComment(ctx context.Context, pr pullrequest.Client) (*github.IssueComment, error) {
 	comments, err := pr.ListComments(ctx, nil)
 	if err != nil {
@@ -58,7 +55,7 @@ func getExistingComment(ctx context.Context, pr pullrequest.Client) (*github.Iss
 
 	comments = lo.Filter(comments, func(c *github.IssueComment, _ int) bool {
 		return isBotID(c.GetUser().GetID()) &&
-			commenterIndicatorRE.MatchString(c.GetBody())
+			indicatorRE.MatchString(c.GetBody())
 	})
 
 	if len(comments) == 0 {
