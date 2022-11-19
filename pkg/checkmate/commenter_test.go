@@ -24,6 +24,7 @@ func Test_commenter(t *testing.T) {
 	const schemaMigrationsGlob = "schema/migrations/*.sql"
 	const docsGlob = "docs/**/*.md"
 	const assetsGlob = "assets/**/*.png"
+	const selectGlob = "select/**/*.go"
 	cfg := Config{
 		PathsChecklists: map[string]ChecklistsForPath{
 			schemaMigrationsGlob: []string{
@@ -35,6 +36,11 @@ func Test_commenter(t *testing.T) {
 			},
 			assetsGlob: []string{
 				"Images have been compressed",
+			},
+			selectGlob: []string{
+				"<!--Checkmate select=1-->",
+				"Item 1",
+				"Item 2",
 			},
 		},
 		Preamble: "Good job!",
@@ -87,6 +93,44 @@ func Test_commenter(t *testing.T) {
 
 					assert.NoErr(json.Unmarshal(b, &issue))
 					assert.True(strings.Contains(issue.GetBody(), schemaMigrationsChecklist))
+				}),
+			),
+		)
+
+		pr, err := pullrequest.NewClient(action, github.NewClient(ghMockAPI))
+		assert.NoErr(err)
+		_, err = commenter(ctx, cfg, action, pr)
+		assert.NoErr(err)
+	})
+
+	t.Run("MatchingFilesForSelectList", func(t *testing.T) {
+		action, _ := setupAction("edited")
+		ghMockAPI := mock.NewMockedHTTPClient(
+			mock.WithRequestMatch(
+				mock.GetReposPullsFilesByOwnerByRepoByPullNumber,
+				[]github.CommitFile{
+					{Filename: ptr.To("select/file/example.go")},
+				},
+			),
+			// No existing comment
+			mock.WithRequestMatch(
+				mock.GetReposIssuesCommentsByOwnerByRepoByIssueNumber,
+				[]github.IssueComment{},
+			),
+
+			// assert posts comment
+			mock.WithRequestMatchHandler(
+				mock.PostReposIssuesCommentsByOwnerByRepoByIssueNumber,
+				http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+					b, err := io.ReadAll(r.Body)
+
+					assert.NoErr(err)
+					issue := github.IssueComment{}
+
+					assert.NoErr(json.Unmarshal(b, &issue))
+
+					selectList := cfg.PathsChecklists[selectGlob].ToChecklistItemsMD(selectGlob)
+					assert.True(strings.Contains(issue.GetBody(), selectList))
 				}),
 			),
 		)

@@ -12,7 +12,7 @@ type reMatch struct {
 }
 
 var (
-	indicatorRE = regexp.MustCompile(`(?i)<!--\s*Checkmate\s*(filepath=(?P<filepath>.*?))?\s*-->`)
+	indicatorRE = regexp.MustCompile(`(?i)<!--\s*Checkmate\s*(select=(?P<select>\d+?))?\s*(filepath=(?P<filepath>.+?))?\s*-->`)
 	headerRE    = regexp.MustCompile(`(?im)^ {0,3}#{1,6}\s.*`)
 )
 

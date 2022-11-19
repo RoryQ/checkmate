@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-github/v48/github"
 	"github.com/sethvargo/go-githubactions"
 
-	pr2 "github.com/roryq/checkmate/pkg/pullrequest"
+	"github.com/roryq/checkmate/pkg/pullrequest"
 )
 
 func Run(ctx context.Context, cfg *Config, action *githubactions.Action, gh *github.Client) error {
@@ -17,7 +17,7 @@ func Run(ctx context.Context, cfg *Config, action *githubactions.Action, gh *git
 		return err
 	}
 
-	pr, err := pr2.NewClient(action, gh)
+	pr, err := pullrequest.NewClient(action, gh)
 	if err != nil {
 		return err
 	}
@@ -52,18 +52,18 @@ func inspect(checklists []Checklist, action *githubactions.Action) error {
 
 	action.AddStepSummary("_The following checklists were found and validated:_\n")
 
-	allChecked := true
+	allCompleted := true
 	for _, checklist := range checklists {
-		allChecked = allChecked && checklist.AllChecked()
+		allCompleted = allCompleted && checklist.ChecklistCompleted()
 
-		if !checklist.AllChecked() {
+		if !checklist.ChecklistCompleted() {
 			headerNoPrefix := strings.TrimPrefix(strings.TrimSpace(checklist.Header), "#")
 			action.Errorf("Checklist not completed %s", headerNoPrefix)
 		}
-		action.AddStepSummary(checklist.Summary())
+		action.AddStepSummary(checklist.MarkdownSummary())
 	}
 
-	if !allChecked {
+	if !allCompleted {
 		return errors.New("not all checklists are completed")
 	}
 

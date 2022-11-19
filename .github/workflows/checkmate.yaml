@@ -10,10 +10,6 @@ on:
       # For changeset automatic checklist. Also requires GITHUB_TOKEN to be set
       - synchronize
   issue_comment:
-    types:
-      - edited
-      - created
-      - deleted
 
 jobs:
   pr-comment-master:
@@ -37,5 +33,7 @@ jobs:
       env:
         INPUT_PATHS: |
           "**/*.go":
+            - <!--checkmate select=1-->
             - Dummy Test Item
+            - Dummy Test Item 2
         INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
