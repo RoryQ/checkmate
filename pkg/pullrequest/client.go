@@ -27,6 +27,11 @@ func (pr Client) ListFiles(ctx context.Context, options *github.ListOptions) ([]
 		if resp.NextPage == 0 {
 			break
 		}
+		if options == nil {
+			options = &github.ListOptions{
+				Page: resp.NextPage,
+			}
+		}
 		options.Page = resp.NextPage
 	}
 	return files, nil
@@ -42,6 +47,13 @@ func (pr Client) ListComments(ctx context.Context, options *github.IssueListComm
 		comments = append(comments, commentsPage...)
 		if resp.NextPage == 0 {
 			break
+		}
+		if options == nil {
+			options = &github.IssueListCommentsOptions{
+				ListOptions: github.ListOptions{
+					Page: resp.NextPage,
+				},
+			}
 		}
 		options.Page = resp.NextPage
 	}
