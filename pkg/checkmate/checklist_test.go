@@ -39,56 +39,66 @@ func TestChecklist_MarkdownSummary(t *testing.T) {
 		want         string
 	}{
 		{
-			name: "SelectList Complete",
-			checklistRaw: `## Choose One Item
+			name: "Selectlist Complete",
+			checklistRaw: `
+## Choose One Item
 <!--Checkmate select=1-->
 - [ ] Apple
 - [x] Pear`,
-			want: `SelectList Complete - 1 out of 1 items selected.
+			want: `
+✅ Selectlist Complete - 1 out of 1 items selected.
 > ## Choose One Item
 > - [ ] Apple
 > - [x] Pear`,
 		},
 		{
-			name: "SelectList Invalid",
-			checklistRaw: `## Choose One Item
+			name: "Selectlist Invalid",
+			checklistRaw: `
+## Choose One Item
 <!--Checkmate select=1-->
 - [x] Apple
 - [x] Pear`,
-			want: `Too many items selected - 2 selected but expected 1.
+			want: `
+❌ Too many items selected - 2 selected but expected 1.
 > ## Choose One Item
 > - [x] Apple
 > - [x] Pear`,
 		},
 		{
-			name: "SelectList Incomplete",
-			checklistRaw: `## Choose One Item
+			name: "Selectlist Incomplete",
+			checklistRaw: `
+## Choose One Item
 <!--Checkmate select=1-->
 - [ ] Apple
 - [ ] Pear`,
-			want: `Incomplete SelectList - 0 out of 1 items selected.
+			want: `
+❌ Incomplete Selectlist - 0 out of 1 items selected.
 > ## Choose One Item
 > - [ ] Apple
 > - [ ] Pear`,
 		},
 		{
 			name: "Checklist Complete",
-			checklistRaw: `## My Checklist
+			checklistRaw: `
+## My Checklist
 <!--Checkmate-->
 - [x] Apple
 - [x] Pear`,
-			want: `Checklist Complete - 2 out of 2 items checked.
+			want: `
+✅ Checklist Complete - 2 out of 2 items checked.
 > ## My Checklist
 > - [x] Apple
 > - [x] Pear`,
 		},
 		{
 			name: "Checklist Incomplete",
-			checklistRaw: `## My Checklist
+			checklistRaw: `
+## My Checklist
 <!--Checkmate-->
 - [x] Apple
 - [ ] Pear`,
-			want: `Incomplete Checklist - 1 out of 2 items checked.
+			want: `
+❌ Incomplete Checklist - 1 out of 2 items checked.
 > ## My Checklist
 > - [x] Apple
 > - [ ] Pear`,
