@@ -7,6 +7,7 @@
 - [x] Fails validation until all configured checklists in the pull request description are checked.
 - [x] Automatic checklists triggered on files modified in the pull request.
 - [x] Support for validating select lists i.e. radio button.
+- [x] [Job summary](https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/) workflow report
 
 ## Configuration
 
@@ -62,16 +63,16 @@ Similar to the [workflow triggers on file paths](https://docs.github.com/en/acti
 you can configure Checkmate to write a checklist comment on a pull request which will be validated along with the
 pull request description.
 
-To enable the automated checklists configure the `with.paths` and the `with.github_token` inputs, and add the synchronize event.
+To enable the automated checklists configure the `with.paths` and the `with.github_token` inputs, and add the synchronize event for pull_request
+and listen to all issue_comment events.
 
-If you want to use a SelectList then the first item should be the `<!--Checkmate select=1-->` comment.
+If you want to use a Selectlist then the first item should be the `<!--Checkmate select=1-->` comment.
 
 ```yaml
 on:
   pull_request:
     types: [edited, opened, reopened, synchronize]
   issue_comment:
-    types: [edited, created, deleted]
 
 name: Checklist Check
 jobs:

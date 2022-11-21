@@ -58,7 +58,8 @@ func inspect(checklists []Checklist, action *githubactions.Action) error {
 
 		if !checklist.ChecklistCompleted() {
 			headerNoPrefix := strings.TrimPrefix(strings.TrimSpace(checklist.Header), "#")
-			action.Errorf("Checklist not completed %s", headerNoPrefix)
+			summaryFormatted := strings.TrimRight(checklist.CompletionSummary(), ".")
+			action.Errorf("%s: %s", summaryFormatted, headerNoPrefix)
 		}
 		action.AddStepSummary(checklist.MarkdownSummary())
 	}

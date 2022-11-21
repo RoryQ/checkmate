@@ -12,8 +12,7 @@ type reMatch struct {
 }
 
 var (
-	indicatorRE = regexp.MustCompile(`(?i)<!--\s*Checkmate\s*(select=(?P<select>\d+?))?\s*(filepath=(?P<filepath>.+?))?\s*-->`)
-	headerRE    = regexp.MustCompile(`(?im)^ {0,3}#{1,6}\s.*`)
+	headerRE = regexp.MustCompile(`(?im)^ {0,3}#{1,6}\s.*`)
 )
 
 func Parse(content string) (list []Checklist) {
@@ -130,4 +129,14 @@ func findChecklistBlocks(content string) (blocks []block) {
 	}
 
 	return blocks
+}
+
+var indicatorRE = regexp.MustCompile(`(?i)<!--\s*Checkmate\s*(select=(?P<select>\d+?))?\s*(filepath=(?P<filepath>.+?))?\s*-->`)
+
+func indicatorGroupMatch(s, name string) string {
+	match := indicatorRE.FindStringSubmatch(s)
+	if i := indicatorRE.SubexpIndex(name); i > 0 && i < len(match) {
+		return match[i]
+	}
+	return ""
 }
