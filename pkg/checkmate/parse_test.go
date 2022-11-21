@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/matryer/is"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -200,9 +200,8 @@ func TestRegexps(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert := is.NewRelaxed(t)
 			actual := findRE(tt.args.content, tt.args.re)
-			assert.Equal(tt.expected, actual)
+			assert.Equal(t, tt.expected, actual)
 		})
 	}
 }
@@ -257,7 +256,6 @@ func Test_findChecklistBlock(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert := is.NewRelaxed(t)
 			actual := findChecklistBlocks(tt.args.content)
 
 			for i, expectedB := range tt.expected {
@@ -266,8 +264,8 @@ func Test_findChecklistBlock(t *testing.T) {
 					actualB = actual[i]
 				}
 
-				assert.Equal(actualB.Raw, expectedB.Raw)
-				assert.Equal(actualB.LineNumbers, expectedB.LineNumbers)
+				assert.Equal(t, actualB.Raw, expectedB.Raw)
+				assert.Equal(t, actualB.LineNumbers, expectedB.LineNumbers)
 			}
 		})
 	}

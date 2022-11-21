@@ -17,13 +17,35 @@ type Client struct {
 }
 
 func (pr Client) ListFiles(ctx context.Context, options *github.ListOptions) ([]*github.CommitFile, error) {
-	files, _, err := pr.gh.PullRequests.ListFiles(ctx, pr.Owner, pr.Repo, pr.Number, options)
-	return files, err
+	var files []*github.CommitFile
+	for {
+		filesPage, resp, err := pr.gh.PullRequests.ListFiles(ctx, pr.Owner, pr.Repo, pr.Number, options)
+		if err != nil {
+			return nil, err
+		}
+		files = append(files, filesPage...)
+		if resp.NextPage == 0 {
+			break
+		}
+		options.Page = resp.NextPage
+	}
+	return files, nil
 }
 
 func (pr Client) ListComments(ctx context.Context, options *github.IssueListCommentsOptions) ([]*github.IssueComment, error) {
-	comments, _, err := pr.gh.Issues.ListComments(ctx, pr.Owner, pr.Repo, pr.Number, options)
-	return comments, err
+	var comments []*github.IssueComment
+	for {
+		commentsPage, resp, err := pr.gh.Issues.ListComments(ctx, pr.Owner, pr.Repo, pr.Number, options)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, commentsPage...)
+		if resp.NextPage == 0 {
+			break
+		}
+		options.Page = resp.NextPage
+	}
+	return comments, nil
 }
 
 func (pr Client) CreateComment(ctx context.Context, comment *github.IssueComment) (*github.IssueComment, error) {

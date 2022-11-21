@@ -9,16 +9,15 @@ import (
 	"testing"
 
 	"github.com/google/go-github/v48/github"
-	"github.com/matryer/is"
 	"github.com/migueleliasweb/go-github-mock/src/mock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/roryq/checkmate/pkg/ptr"
 	"github.com/roryq/checkmate/pkg/pullrequest"
 )
 
 func Test_commenter(t *testing.T) {
-	assert := is.NewRelaxed(t)
-	require := is.New(t)
 	ctx := context.Background()
 
 	const schemaMigrationsGlob = "schema/migrations/*.sql"
@@ -61,9 +60,9 @@ func Test_commenter(t *testing.T) {
 		)
 
 		pr, err := pullrequest.NewClient(action, github.NewClient(ghMockAPI))
-		assert.NoErr(err)
+		assert.NoError(t, err)
 		_, err = commenter(ctx, cfg, action, pr)
-		assert.NoErr(err)
+		assert.NoError(t, err)
 	})
 
 	t.Run("MatchingFilesNoExistingComment", func(t *testing.T) {
@@ -88,19 +87,19 @@ func Test_commenter(t *testing.T) {
 				http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
 					b, err := io.ReadAll(r.Body)
 
-					assert.NoErr(err)
+					assert.NoError(t, err)
 					issue := github.IssueComment{}
 
-					assert.NoErr(json.Unmarshal(b, &issue))
-					assert.True(strings.Contains(issue.GetBody(), schemaMigrationsChecklist))
+					assert.NoError(t, json.Unmarshal(b, &issue))
+					assert.Contains(t, issue.GetBody(), schemaMigrationsChecklist)
 				}),
 			),
 		)
 
 		pr, err := pullrequest.NewClient(action, github.NewClient(ghMockAPI))
-		assert.NoErr(err)
+		assert.NoError(t, err)
 		_, err = commenter(ctx, cfg, action, pr)
-		assert.NoErr(err)
+		assert.NoError(t, err)
 	})
 
 	t.Run("MatchingFilesForSelectList", func(t *testing.T) {
@@ -124,21 +123,21 @@ func Test_commenter(t *testing.T) {
 				http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
 					b, err := io.ReadAll(r.Body)
 
-					assert.NoErr(err)
+					assert.NoError(t, err)
 					issue := github.IssueComment{}
 
-					assert.NoErr(json.Unmarshal(b, &issue))
+					assert.NoError(t, json.Unmarshal(b, &issue))
 
 					selectList := cfg.PathsChecklists[selectGlob].ToChecklistItemsMD(selectGlob)
-					assert.True(strings.Contains(issue.GetBody(), selectList))
+					assert.Contains(t, issue.GetBody(), selectList)
 				}),
 			),
 		)
 
 		pr, err := pullrequest.NewClient(action, github.NewClient(ghMockAPI))
-		assert.NoErr(err)
+		assert.NoError(t, err)
 		_, err = commenter(ctx, cfg, action, pr)
-		assert.NoErr(err)
+		assert.NoError(t, err)
 	})
 
 	t.Run("MatchingFilesWithExistingComment", func(t *testing.T) {
@@ -163,9 +162,9 @@ func Test_commenter(t *testing.T) {
 		)
 
 		gh, err := pullrequest.NewClient(action, github.NewClient(ghMockAPI))
-		assert.NoErr(err)
+		assert.NoError(t, err)
 		_, err = commenter(ctx, cfg, action, gh)
-		assert.NoErr(err)
+		assert.NoError(t, err)
 	})
 
 	t.Run("MatchingFilesWithExistingCommentAndChangedFiles", func(t *testing.T) {
@@ -195,22 +194,22 @@ func Test_commenter(t *testing.T) {
 				http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
 					b, err := io.ReadAll(r.Body)
 
-					assert.NoErr(err)
+					assert.NoError(t, err)
 					issue := github.IssueComment{}
-					assert.NoErr(json.Unmarshal(b, &issue))
+					assert.NoError(t, json.Unmarshal(b, &issue))
 
 					body := issue.GetBody()
-					assert.True(strings.Contains(body, cfg.Preamble))
-					assert.True(strings.Contains(body, schemaChecked))
-					assert.True(strings.Contains(body, docsChecklist))
-					assert.True(!strings.Contains(body, assetsChecklist))
+					assert.True(t, strings.Contains(body, cfg.Preamble))
+					assert.True(t, strings.Contains(body, schemaChecked))
+					assert.True(t, strings.Contains(body, docsChecklist))
+					assert.True(t, !strings.Contains(body, assetsChecklist))
 				}),
 			),
 		)
 
 		gh, err := pullrequest.NewClient(action, github.NewClient(ghMockAPI))
-		require.NoErr(err)
+		require.NoError(t, err)
 		_, err = commenter(ctx, cfg, action, gh)
-		require.NoErr(err)
+		require.NoError(t, err)
 	})
 }

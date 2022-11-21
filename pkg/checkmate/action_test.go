@@ -6,31 +6,29 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/matryer/is"
 	"github.com/sethvargo/go-githubactions"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRun(t *testing.T) {
-	assert := is.NewRelaxed(t)
-	require := is.New(t)
-
 	t.Run("CheckedSuccess", func(t *testing.T) {
 		action, _ := setupAction("edited-checked")
 		err := Run(context.Background(), new(Config), action, nil)
-		assert.NoErr(err)
+		assert.NoError(t, err)
 	})
 
 	t.Run("UncheckedFailure", func(t *testing.T) {
 		action, _ := setupAction("edited")
 		err := Run(context.Background(), new(Config), action, nil)
-		require.True(err != nil)
-		assert.Equal("not all checklists are completed", err.Error())
+		require.Error(t, err)
+		assert.Equal(t, "not all checklists are completed", err.Error())
 	})
 
 	t.Run("OpenedWithNullBody", func(t *testing.T) {
 		action, _ := setupAction("opened.with-null-body")
 		err := Run(context.Background(), new(Config), action, nil)
-		assert.NoErr(err)
+		assert.NoError(t, err)
 	})
 }
 

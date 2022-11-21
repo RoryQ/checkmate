@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/matryer/is"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestParseIndicator(t *testing.T) {
@@ -33,7 +33,6 @@ func TestParseIndicator(t *testing.T) {
 }
 
 func TestChecklist_MarkdownSummary(t *testing.T) {
-	assert := is.NewRelaxed(t)
 	tests := []struct {
 		name         string
 		checklistRaw string
@@ -98,7 +97,7 @@ func TestChecklist_MarkdownSummary(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			checklists := Parse(tt.checklistRaw)
-			assert.Equal(len(checklists), 1)
+			assert.Equal(t, len(checklists), 1)
 			c := checklists[0]
 			if got := c.MarkdownSummary(); got != tt.want {
 				t.Errorf("MarkdownSummary() = %v, want %v", got, tt.want)
