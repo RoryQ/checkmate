@@ -7,7 +7,7 @@
 - [x] Fails validation until all configured checklists in the pull request description are checked.
 - [x] Automatic checklists triggered on files modified in the pull request.
 - [x] Support for validating select lists i.e. radio button.
-- [x] [Job summary](https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/) workflow report
+- [x] [Job summary](https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/) workflow report.
 
 ## Configuration
 
@@ -47,9 +47,9 @@ on:
   pull_request:
     types: [edited, opened, reopened]
     
-name: Checklist Check
+name: Checkmate
 jobs:
-  checkmate:
+  validate-checklists:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -74,9 +74,9 @@ on:
     types: [edited, opened, reopened, synchronize]
   issue_comment:
 
-name: Checklist Check
+name: Checkmate
 jobs:
-  checkmate:
+  validate-checklists:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
