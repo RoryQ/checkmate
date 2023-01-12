@@ -96,7 +96,7 @@ type block struct {
 }
 
 func findChecklistBlocks(content string) (blocks []block) {
-	re := regexp.MustCompile(`- \[[ x]\] .*`)
+	re := regexp.MustCompile(`- \[[ xX]\] .*`)
 
 	matches := findRE(content, re)
 

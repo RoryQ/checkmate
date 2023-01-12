@@ -253,6 +253,18 @@ func Test_findChecklistBlock(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "UppercaseCheck",
+			args: args{
+				content: strings.ReplaceAll(ChecklistWithIndicator, "[x]", "[X]"),
+			},
+			expected: []block{
+				{
+					Raw:         strings.ReplaceAll(checklistBlock, "[x]", "[X]"),
+					LineNumbers: []int{11, 12, 13, 14, 15},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
