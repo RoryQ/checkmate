@@ -31,12 +31,12 @@ jobs:
         go-version: 1.19
     - run: go run main.go
       env:
-        INPUT_PATHS: |
-          "**/*.go":
-            - <!--checkmate select=1-->
-            - Dummy Test Item
-            - Dummy Test Item 2
-          README.md:
-            - Test 1
-            - Test 2
+#        INPUT_PATHS: |
+#          "**/*.go":
+#            - <!--checkmate select=1-->
+#            - Dummy Test Item
+#            - Dummy Test Item 2
+#          README.md:
+#            - Test 1
+#            - Test 2
         INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
