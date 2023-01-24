@@ -98,19 +98,24 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "No Headers",
-			args: args{content: "<!--Checkmate-->\n- [ ] unchecked"},
+			args: args{content: "<!--Checkmate-->\n- [ ] unchecked\n- [X] uppercase checked"},
 			expected: []Checklist{
 				{
 					Header: "",
 					Meta: ChecklistMetadata{
 						RawIndicator: "<!--Checkmate-->",
 					},
-					Raw: "- [ ] unchecked",
+					Raw: "- [ ] unchecked\n- [X] uppercase checked",
 					Items: []ChecklistItem{
 						{
 							"unchecked",
 							false,
 							"- [ ] unchecked",
+						},
+						{
+							"uppercase checked",
+							true,
+							"- [X] uppercase checked",
 						},
 					},
 				},

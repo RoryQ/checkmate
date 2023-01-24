@@ -57,9 +57,9 @@ func closestHeaderTo(headers []reMatch, indLineNumber int) string {
 }
 
 func blockToItems(b block) (items []ChecklistItem) {
-	re := regexp.MustCompile(`- (?P<Checked>\[[ x]]) (?P<Message>.*)`)
+	re := regexp.MustCompile(`(?i)- (?P<Checked>\[[ x]]) (?P<Message>.*)`)
 	parseChecked := func(s string) bool {
-		return s == "[x]"
+		return strings.EqualFold(s, "[x]")
 	}
 
 	for _, line := range strings.Split(b.Raw, "\n") {
@@ -96,7 +96,7 @@ type block struct {
 }
 
 func findChecklistBlocks(content string) (blocks []block) {
-	re := regexp.MustCompile(`- \[[ xX]\] .*`)
+	re := regexp.MustCompile(`(?i)- \[[ x]\] .*`)
 
 	matches := findRE(content, re)
 
