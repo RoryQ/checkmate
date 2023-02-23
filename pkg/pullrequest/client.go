@@ -90,11 +90,24 @@ func NewClient(action *githubactions.Action, gh *github.Client) (Client, error) 
 }
 
 func getPRNumber(event map[string]any) (int, error) {
-	number, ok := event["pull_request"].(map[string]any)["number"]
-	if !ok {
-		return 0, errors.New("cannot get pull_request number")
+	getNumber := func(eventName string) (int, error) {
+		eventField, ok := event[eventName]
+		if !ok {
+			return 0, errors.New("incorrect event type")
+		}
+
+		number, ok := eventField.(map[string]any)["number"]
+		if !ok {
+			return 0, errors.New("cannot get pull_request number")
+		}
+		return int(number.(float64)), nil
 	}
-	return int(number.(float64)), nil
+
+	num, err := getNumber("pull_request")
+	if err != nil {
+		return getNumber("issue")
+	}
+	return num, err
 }
 
 func getRepo(action *githubactions.Action, event map[string]any) (string, string) {
