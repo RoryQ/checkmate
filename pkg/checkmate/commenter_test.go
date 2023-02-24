@@ -49,7 +49,7 @@ func Test_commenter(t *testing.T) {
 	assetsChecklist := cfg.PathsChecklists[assetsGlob].ToChecklistItemsMD(assetsGlob)
 
 	t.Run("NoMatchingFiles", func(t *testing.T) {
-		action, _ := setupAction("edited")
+		action, _ := setupAction("pull-request.edited")
 		ghMockAPI := mock.NewMockedHTTPClient(
 			mock.WithRequestMatch(
 				mock.GetReposPullsFilesByOwnerByRepoByPullNumber,
@@ -66,7 +66,7 @@ func Test_commenter(t *testing.T) {
 	})
 
 	t.Run("MatchingFilesNoExistingComment", func(t *testing.T) {
-		action, _ := setupAction("edited")
+		action, _ := setupAction("pull-request.edited")
 		ghMockAPI := mock.NewMockedHTTPClient(
 			mock.WithRequestMatch(
 				mock.GetReposPullsFilesByOwnerByRepoByPullNumber,
@@ -103,7 +103,7 @@ func Test_commenter(t *testing.T) {
 	})
 
 	t.Run("MatchingFilesForSelectList", func(t *testing.T) {
-		action, _ := setupAction("edited")
+		action, _ := setupAction("pull-request.edited")
 		ghMockAPI := mock.NewMockedHTTPClient(
 			mock.WithRequestMatch(
 				mock.GetReposPullsFilesByOwnerByRepoByPullNumber,
@@ -141,7 +141,7 @@ func Test_commenter(t *testing.T) {
 	})
 
 	t.Run("MatchingFilesWithExistingComment", func(t *testing.T) {
-		action, _ := setupAction("edited")
+		action, _ := setupAction("pull-request.edited")
 		ghMockAPI := mock.NewMockedHTTPClient(
 			mock.WithRequestMatch(
 				mock.GetReposPullsFilesByOwnerByRepoByPullNumber,
@@ -168,7 +168,7 @@ func Test_commenter(t *testing.T) {
 	})
 
 	t.Run("MatchingFilesWithExistingCommentAndChangedFiles", func(t *testing.T) {
-		action, _ := setupAction("edited")
+		action, _ := setupAction("pull-request.edited")
 		schemaChecked := strings.ReplaceAll(schemaMigrationsChecklist, "[ ]", "[x]")
 		ghMockAPI := mock.NewMockedHTTPClient(
 			mock.WithRequestMatch(
