@@ -72,7 +72,12 @@ func inspect(checklists []Checklist, action *githubactions.Action) error {
 }
 
 func getPullRequestBody(ghctx *githubactions.GitHubContext) (string, error) {
-	body, ok := ghctx.Event["pull_request"].(map[string]any)["body"]
+	pullRequest, ok := ghctx.Event["pull_request"]
+	if !ok {
+		return "", nil
+	}
+
+	body, ok := pullRequest.(map[string]any)["body"]
 	if !ok || body == nil {
 		return "", nil
 	}

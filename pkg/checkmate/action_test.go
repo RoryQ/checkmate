@@ -13,20 +13,26 @@ import (
 
 func TestRun(t *testing.T) {
 	t.Run("CheckedSuccess", func(t *testing.T) {
-		action, _ := setupAction("edited-checked")
+		action, _ := setupAction("pull-request.edited-checked")
 		err := Run(context.Background(), new(Config), action, nil)
 		assert.NoError(t, err)
 	})
 
 	t.Run("UncheckedFailure", func(t *testing.T) {
-		action, _ := setupAction("edited")
+		action, _ := setupAction("pull-request.edited")
 		err := Run(context.Background(), new(Config), action, nil)
 		require.Error(t, err)
 		assert.Equal(t, "not all checklists are completed", err.Error())
 	})
 
 	t.Run("OpenedWithNullBody", func(t *testing.T) {
-		action, _ := setupAction("opened.with-null-body")
+		action, _ := setupAction("pull-request.opened.with-null-body")
+		err := Run(context.Background(), new(Config), action, nil)
+		assert.NoError(t, err)
+	})
+
+	t.Run("IssueComment", func(t *testing.T) {
+		action, _ := setupAction("issue-comment.created")
 		err := Run(context.Background(), new(Config), action, nil)
 		assert.NoError(t, err)
 	})
@@ -34,7 +40,7 @@ func TestRun(t *testing.T) {
 
 func setupAction(input string) (*githubactions.Action, *bytes.Buffer) {
 	envMap := map[string]string{
-		"GITHUB_EVENT_PATH":   fmt.Sprintf("../../test/events/pull-request.%s.json", input),
+		"GITHUB_EVENT_PATH":   fmt.Sprintf("../../test/events/%s.json", input),
 		"GITHUB_STEP_SUMMARY": "/dev/null",
 		"GITHUB_REPOSITORY":   "RoryQ/checkmate",
 	}
