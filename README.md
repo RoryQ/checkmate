@@ -46,7 +46,12 @@ Then configure the action in your workflow like
 on:
   pull_request:
     types: [edited, opened, reopened]
-    
+
+# cancel old edit events being processed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
 name: Checkmate
 jobs:
   validate-checklists:
@@ -74,6 +79,11 @@ on:
     types: [edited, opened, reopened, synchronize]
   issue_comment:
 
+# cancel old edit events being processed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
 name: Checkmate
 jobs:
   validate-checklists:
