@@ -1,4 +1,4 @@
-module github.com/roryq/checkmate
+module github.com/marcusvnac/checkmate-evo
 
 go 1.20
 

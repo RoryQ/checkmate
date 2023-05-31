@@ -1,4 +1,4 @@
-name: Checkmate
+name: Checkmate-Evo
 
 on:
   pull_request:
@@ -21,26 +21,26 @@ jobs:
       CHECKMATE_DEBUG: true
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: roryq/checkmate@master
+      - uses: actions/checkout@v3
+      - uses: marcusvnac/checkmate-evo@main
 
   pr-comment-golang:
     env:
       CHECKMATE_DEBUG: true
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-go@v3
-      with:
-        go-version: stable
-    - run: go run main.go
-      env:
-#        INPUT_PATHS: |
-#          "**/*.go":
-#            - <!--checkmate select=1-->
-#            - Dummy Test Item
-#            - Dummy Test Item 2
-#          README.md:
-#            - Test 1
-#            - Test 2
-        INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: stable
+      - run: go run main.go
+        env:
+  #        INPUT_PATHS: |
+  #          "**/*.go":
+  #            - <!--checkmate select=1-->
+  #            - Dummy Test Item
+  #            - Dummy Test Item 2
+  #          README.md:
+  #            - Test 1
+  #            - Test 2
+          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -13,8 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/roryq/checkmate/pkg/ptr"
-	"github.com/roryq/checkmate/pkg/pullrequest"
+	"github.com/marcusvnac/checkmate-evo/pkg/ptr"
+	"github.com/marcusvnac/checkmate-evo/pkg/pullrequest"
 )
 
 func Test_commenter(t *testing.T) {

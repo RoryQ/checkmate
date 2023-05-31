@@ -1,5 +1,3 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
 before:
   hooks:
     # You may remove this if you don't use go modules.
@@ -11,7 +9,7 @@ builds:
       - linux
       - windows
       - darwin
-    ldflags: "-s -w"
+    ldflags: -s -w
 archives:
   - replacements:
       darwin: Darwin
@@ -20,9 +18,9 @@ archives:
       386: i386
       amd64: x86_64
 checksum:
-  name_template: 'checksums.txt'
+  name_template: checksums.txt
 snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  name_template: '{{ incpatch .Version }}-next'
 changelog:
   sort: asc
   filters:

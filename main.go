@@ -8,8 +8,8 @@ import (
 	"github.com/sethvargo/go-githubactions"
 	"golang.org/x/oauth2"
 
-	"github.com/roryq/checkmate/pkg/checkmate"
-	"github.com/roryq/checkmate/pkg/checkmate/inputs"
+	"github.com/marcusvnac/checkmate-evo/pkg/checkmate"
+	"github.com/marcusvnac/checkmate-evo/pkg/checkmate/inputs"
 )
 
 func run() error {

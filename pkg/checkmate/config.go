@@ -9,7 +9,7 @@ import (
 	"github.com/sethvargo/go-githubactions"
 	"gopkg.in/yaml.v3"
 
-	"github.com/roryq/checkmate/pkg/checkmate/inputs"
+	"github.com/marcusvnac/checkmate-evo/pkg/checkmate/inputs"
 )
 
 type Config struct {

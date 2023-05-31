@@ -59,7 +59,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Validate Checklists
-      uses: roryq/checkmate@master
+      uses: marcusvnac/checkmate-evo@main
 ```
 
 ### Automatic checklists
@@ -91,7 +91,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Validate Checklists
-        uses: roryq/checkmate@master
+        uses: marcusvanc/checkmate-evo@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           paths: |

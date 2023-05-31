@@ -38,7 +38,7 @@ function chooseBinary(versionTag) {
 }
 
 function downloadBinary(versionTag, binary) {
-    const url = `https://github.com/RoryQ/checkmate/releases/download/${versionTag}/${binary}.tar.gz`
+    const url = `https://github.com/marcusvnac/checkmate-evo/releases/download/${versionTag}/${binary}.tar.gz`
     logDebug(url)
     const result = cp.execSync(`curl --silent --location --remote-header-name  ${url} | tar xvz`)
     logDebug(result.toString())
@@ -49,7 +49,7 @@ function determineVersion() {
     if (!!process.env.INPUT_VERSION) {
         return process.env.INPUT_VERSION
     }
-    const result = cp.execSync(`curl --silent --location "https://api.github.com/repos/RoryQ/checkmate/releases/latest" | jq  -r ".. .tag_name? // empty"`)
+    const result = cp.execSync(`curl --silent --location "https://api.github.com/repos/marcusvnac/checkmate-evo/releases/latest" | jq  -r ".. .tag_name? // empty"`)
     return result.toString().trim();
 }
 

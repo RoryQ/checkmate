@@ -4,7 +4,7 @@ on:
   push:
     # run only against tags
     tags:
-      - 'v*.*.*'
+      - v*.*.*
 
 permissions:
   contents: write
@@ -19,7 +19,7 @@ jobs:
       - run: git fetch --force --tags
       - uses: actions/setup-go@v3
         with:
-          go-version: 'stable'
+          go-version: stable
           cache: true
       - uses: goreleaser/goreleaser-action@v2
         with:

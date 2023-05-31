@@ -1,15 +1,14 @@
-name: Checkmate
+name: test
 
 on:
   pull_request
-
 
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-go@v3
-      with:
-        go-version: stable
-    - run: go test ./...
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: stable
+      - run: go test ./...

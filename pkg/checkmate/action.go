@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-github/v48/github"
 	"github.com/sethvargo/go-githubactions"
 
-	"github.com/roryq/checkmate/pkg/pullrequest"
+	"github.com/marcusvnac/checkmate-evo/pkg/pullrequest"
 )
 
 func Run(ctx context.Context, cfg *Config, action *githubactions.Action, gh *github.Client) error {

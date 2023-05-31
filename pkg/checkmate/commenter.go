@@ -11,8 +11,8 @@ import (
 	"github.com/samber/lo"
 	"github.com/sethvargo/go-githubactions"
 
-	"github.com/roryq/checkmate/pkg/ptr"
-	"github.com/roryq/checkmate/pkg/pullrequest"
+	"github.com/marcusvnac/checkmate-evo/pkg/ptr"
+	"github.com/marcusvnac/checkmate-evo/pkg/pullrequest"
 )
 
 func commenter(ctx context.Context, cfg Config, action *githubactions.Action, pr pullrequest.Client) (string, error) {

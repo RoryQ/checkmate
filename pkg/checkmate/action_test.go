@@ -42,7 +42,7 @@ func setupAction(input string) (*githubactions.Action, *bytes.Buffer) {
 	envMap := map[string]string{
 		"GITHUB_EVENT_PATH":   fmt.Sprintf("../../test/events/%s.json", input),
 		"GITHUB_STEP_SUMMARY": "/dev/null",
-		"GITHUB_REPOSITORY":   "RoryQ/checkmate",
+		"GITHUB_REPOSITORY":   "marcusvnac/checkmate-evo",
 	}
 	getenv := func(key string) string {
 		return envMap[key]

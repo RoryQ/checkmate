@@ -80,7 +80,7 @@ func NewClient(action *githubactions.Action, gh *github.Client) (Client, error) 
 	if err != nil {
 		return Client{}, err
 	}
-	action.Debugf("PR context: %s %s %d", owner, repo, number)
+	action.Infof("PR context: %s %s %d", owner, repo, number)
 	return Client{
 		Owner:  owner,
 		Repo:   repo,

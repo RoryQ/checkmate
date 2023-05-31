@@ -1,6 +1,6 @@
-name: Checkmate the Checklist Checker 🕵️
-description: Automated checklist inspector for your pull requests
-author: "Rory Quinn"
+name: Checkmate-Evo - Checklist Checker
+description: Automated checklist inspector for Pull Tequests
+author: Marcus Couto - Forked from "Rory Quinn" at https://github.com/marcusvnac/checkmate-evo
 
 inputs:
   github_token:
@@ -15,5 +15,5 @@ runs:
   using: node16
   main: index.js
 branding:
-  icon: "check-square"
-  color: "green"
+  icon: check-square
+  color: green
