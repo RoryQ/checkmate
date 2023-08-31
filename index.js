@@ -50,7 +50,13 @@ function determineVersion() {
         return process.env.INPUT_VERSION
     }
     const result = cp.execSync(`curl --silent --location "https://api.github.com/repos/RoryQ/checkmate/releases/latest" | jq  -r ".. .tag_name? // empty"`)
-    return result.toString().trim();
+    let ver = result.toString().trim();
+    // fallback to v1.0.0
+    if (ver === "") {
+        logDebug("No version found, falling back to v1.0.0")
+        ver = "v1.0.0"
+    }
+    return ver
 }
 
 function main() {
