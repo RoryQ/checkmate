@@ -65,6 +65,22 @@ func Test_commenter(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
+	t.Run("IssueCommentHasNoFiles", func(t *testing.T) {
+		action, _ := setupAction("issue-comment.created")
+		ghMockAPI := mock.NewMockedHTTPClient(
+			mock.WithRequestMatchHandler(
+				mock.GetReposPullsFilesByOwnerByRepoByPullNumber,
+				http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+					mock.WriteError(w, http.StatusNotFound, "Not Found")
+				}),
+			))
+
+		pr, err := pullrequest.NewClient(action, github.NewClient(ghMockAPI))
+		assert.NoError(t, err)
+		_, err = commenter(ctx, cfg, action, pr)
+		assert.NoError(t, err)
+	})
+
 	t.Run("MatchingFilesNoExistingComment", func(t *testing.T) {
 		action, _ := setupAction("pull-request.edited")
 		ghMockAPI := mock.NewMockedHTTPClient(
