@@ -2,6 +2,8 @@ package checkmate
 
 import (
 	"context"
+	"errors"
+	"net/http"
 	"sort"
 	"strings"
 
@@ -138,6 +140,9 @@ func updateComment(ctx context.Context, action *githubactions.Action, cfg Config
 
 func listPullRequestFiles(ctx context.Context, pr pullrequest.Client) ([]string, error) {
 	files, err := pr.ListFiles(ctx, nil)
+	if isNotFoundError(err) {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -160,4 +165,14 @@ func sorted(ss []string) []string {
 // join call strings.Join using the last argument as the separator
 func join(s ...string) string {
 	return strings.Join(s[:len(s)-1], s[len(s)-1])
+}
+
+func isNotFoundError(err error) bool {
+	ghe := new(github.ErrorResponse)
+	if errors.As(err, &ghe) {
+		if ghe.Response.StatusCode == http.StatusNotFound {
+			return true
+		}
+	}
+	return false
 }
