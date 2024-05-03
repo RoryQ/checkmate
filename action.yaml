@@ -12,7 +12,7 @@ inputs:
   version:
     description: Release version of checkmate to run.
 runs:
-  using: node16
+  using: node20
   main: index.js
 branding:
   icon: "check-square"
