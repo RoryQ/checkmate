@@ -16,6 +16,11 @@ func Run(ctx context.Context, cfg *Config, action *githubactions.Action, gh *git
 	if err != nil {
 		return err
 	}
+	switch githubContext.EventName {
+	case "merge_group":
+		action.Infof("skipping checkmate on %s", githubContext.EventName)
+		return nil
+	}
 
 	pr, err := pullrequest.NewClient(action, gh)
 	if err != nil {
