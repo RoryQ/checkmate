@@ -1,11 +1,13 @@
 package checkmate
 
 import (
+	"io"
 	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/sethvargo/go-githubactions"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -121,12 +123,19 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:     "Indicator but no checklist",
+			args:     args{content: "<!--Checkmate-->"},
+			expected: nil,
+		},
 	}
+
+	action := githubactions.New(githubactions.WithWriter(io.Discard))
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actualList := Parse(tt.args.content)
-			if !cmp.Equal(actualList, tt.expected) {
-				t.Error(cmp.Diff(actualList, tt.expected))
+			actualList := Parse(action, tt.args.content)
+			if !cmp.Equal(tt.expected, actualList) {
+				t.Error(cmp.Diff(tt.expected, actualList))
 			}
 		})
 	}

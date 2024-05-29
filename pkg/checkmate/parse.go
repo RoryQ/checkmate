@@ -4,6 +4,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/sethvargo/go-githubactions"
 )
 
 type reMatch struct {
@@ -15,7 +17,7 @@ var (
 	headerRE = regexp.MustCompile(`(?im)^ {0,3}#{1,6}\s.*`)
 )
 
-func Parse(content string) (list []Checklist) {
+func Parse(action *githubactions.Action, content string) (list []Checklist) {
 	indicators := findRE(content, indicatorRE)
 	if len(indicators) == 0 {
 		return
@@ -32,10 +34,16 @@ func Parse(content string) (list []Checklist) {
 			return checklists[i].LineNumbers[0] > indLineNumber
 		})
 
+		if c >= len(checklists) {
+			action.Warningf("No checklist found for indicator at line %d", indLineNumber)
+			continue
+		}
+
+		checklistForIndicator := checklists[c]
 		list = append(list, Checklist{
-			Items:  blockToItems(checklists[c]),
+			Items:  blockToItems(checklistForIndicator),
 			Header: closestHeaderTo(headers, indLineNumber),
-			Raw:    checklists[c].Raw,
+			Raw:    checklistForIndicator.Raw,
 			Meta:   ParseIndicator(ind.Raw),
 		})
 	}
