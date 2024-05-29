@@ -1,9 +1,11 @@
 package checkmate
 
 import (
+	"io"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/sethvargo/go-githubactions"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -104,9 +106,10 @@ func TestChecklist_MarkdownSummary(t *testing.T) {
 > - [ ] Pear`,
 		},
 	}
+	action := githubactions.New(githubactions.WithWriter(io.Discard))
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			checklists := Parse(tt.checklistRaw)
+			checklists := Parse(action, tt.checklistRaw)
 			assert.Equal(t, len(checklists), 1)
 			c := checklists[0]
 			if got := c.MarkdownSummary(); got != tt.want {

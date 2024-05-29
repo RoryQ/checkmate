@@ -94,7 +94,7 @@ func updateComment(ctx context.Context, action *githubactions.Action, cfg Config
 		return commentBody, err
 	}
 
-	checklists := Parse(comment.GetBody())
+	checklists := Parse(action, comment.GetBody())
 	actualFilenames := sorted(lo.WithoutEmpty(lo.Map(checklists, func(item Checklist, _ int) string {
 		return item.Meta.FilenameGlob
 	})))
@@ -115,7 +115,7 @@ func updateComment(ctx context.Context, action *githubactions.Action, cfg Config
 
 	action.Infof("Adding checklists for [ %s ]", strings.Join(globAdd, " "))
 	toAdd := lo.Map(globAdd, func(key string, _ int) Checklist {
-		return Parse(checklistConfig[key].ToChecklistItemsMD(key))[0]
+		return Parse(action, checklistConfig[key].ToChecklistItemsMD(key))[0]
 	})
 
 	checklists = sortedByFilename(append(filtered, toAdd...))

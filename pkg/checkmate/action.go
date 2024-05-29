@@ -37,7 +37,7 @@ func Run(ctx context.Context, cfg *Config, action *githubactions.Action, gh *git
 
 		if comment != "" {
 			action.Infof("Comment checklist %s", comment)
-			checklists = Parse(comment)
+			checklists = Parse(action, comment)
 		}
 	}
 
@@ -48,7 +48,7 @@ func Run(ctx context.Context, cfg *Config, action *githubactions.Action, gh *git
 
 	action.Infof("PR Body: %s", descriptionPR)
 
-	checklists = append(Parse(descriptionPR), checklists...)
+	checklists = append(Parse(action, descriptionPR), checklists...)
 	return inspect(checklists, action)
 }
 
