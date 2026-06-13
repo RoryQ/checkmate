@@ -21,7 +21,7 @@ jobs:
       CHECKMATE_DEBUG: true
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: roryq/checkmate@master
 
   pr-comment-golang:
@@ -29,8 +29,8 @@ jobs:
       CHECKMATE_DEBUG: true
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-go@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v5
       with:
         go-version: stable
     - run: go run main.go

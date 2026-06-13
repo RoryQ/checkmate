@@ -57,7 +57,7 @@ jobs:
   validate-checklists:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Validate Checklists
       uses: roryq/checkmate@master
 ```
@@ -89,7 +89,7 @@ jobs:
   validate-checklists:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Validate Checklists
         uses: roryq/checkmate@master
         with:
